@@ -1,0 +1,94 @@
+
+<h5 class="text-center">ใบแจ้งค่าใช้บริการ (STATEMENT)</h5>
+<% for (var i = 0; i <rows.length; i++) { %>
+<table style="font-size:12px">
+    
+    <tr>
+        <td width="50%">ชื่อลูกค้า คุณ<%= rows[i].cust_name %></td>
+        <td width="15%">&nbsp;</td>
+        <td width="20%">รหัสลูกค้า (Account No.)</td>
+        <td width="15%"><%= rows[i].account_no %></td>
+    </tr>
+    <tr>
+        <td width="50%">ที่อยู่ <%= rows[i].cust_add %></td>
+        <td width="15%">&nbsp;</td>
+        <td width="20%">เลขที่ (Invoice No)</td>
+        <td width="15%"><%= rows[i].invoice_no %></td>
+    </tr>
+    <tr>
+        <td width="50%">เลขประจำตัวผู้เสียภาษี <%= rows[i].tax_id %></td>
+        <td width="15%">&nbsp;</td>
+        <td width="20%">วันที่ (Issue Date)</td>
+        <td width="15%"><%= rows[i].issue_date %></td>
+    </tr>
+    <tr><td>&nbsp;</td></tr>
+    <tr>
+        <td width="50%"><%= rows[i].cust_mobile %></td>
+        <td colspan="3" width="50%">สรุปรายการค่าใช้บริการ (Bill Cycle) &nbsp;&nbsp;&nbsp;<%= rows[i].bill_cycle_start %> - <%= rows[i].bill_cycle_end %></td>
+    </tr>
+</table>
+
+<table class="table table-bordered border-dark" style="font-size:12px;">
+    <thead>
+        <tr>
+            <th class="text-center">ค่าบริการค้าชำระ<br>(Outstanding Balance)</th>
+            <th class="text-center">ค่าบริการที่ชำระแล้ว<br>(Paid amount)</th>
+            <th class="text-center">ค่าใช้บริการรอบปัจจุบัน<br>(Current charge)</th>
+            <th class="text-center">ยอดรวมที่ต้องชำระทั้งสิ้น<br>(Total Outstanding balance)</th>
+            <th class="text-center">วันครบกำหนดชำระ<br>(Current Due date)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="text-center"><%= rows[i].out_bal %></td>
+            <td class="text-center"><%= rows[i].out_bal %></td>
+            <td class="text-center"><%= rows[i].out_bal %></td>
+            <td class="text-center"><%= rows[i].total_out_bal %></td>
+            <td class="text-center"><%= rows[i].current_due_date %></td>
+        </tr>
+    </tbody>
+</table>
+<table class="" style="font-size:12px;width:100%;">
+    <thead>
+        <tr>
+            <th colspan="2" style="border : 1px solid #000 !important;" width="80%" class="text-center">รวมค่าบริการรอบปัจจุบัน<br>(Summary of Current Charges)</th>
+            <th colspan="2" style="border : 1px solid #000 !important;" width="20%"  class="text-center">จำนวนเงิน<br>(Amount)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr style="height:300px">
+            <td  colspan="2" style="border : 1px solid #000 !important;">
+            </td>
+            <td  colspan="2" style="border : 1px solid #000 !important;" class="text-center">
+            </td>
+        </tr>
+        <tr >
+            <td width="50%">Promotion :</td>
+            <td  width="20%">จำนวนเงิน</td>
+            <td  style="border : 1px solid #000 !important;" class="text-center">
+            </td>
+        </tr>
+        <tr>
+            <td width="50%">-โทรในเครือข่าย AIS ฟรี 24 ชั่วโมง </td>
+            <td width="20%">ภาษีมูลค่าเพิ่ม 7 %</td>
+            <td  style="border : 1px solid #000 !important;" class="text-center">
+            </td>
+        </tr>
+        <tr >
+            <td width="50%">-โทรนอกเครือข่ายฟรี 08:00 น.-19:59 น. นอกเวลานาทีละ 0.85 บาท</td>
+            <td width="20%">รวมค่าใช้ยีิการรอบปัจจุบัน</td>
+            <td  style="border : 1px solid #000 !important;" class="text-center">
+            </td>
+        </tr>
+        <tr ><td colspan="3" >-ใช้งานอินเตอร์เน็ต 40 GB (หลังจากนั้นใช้งานได้ต่อเนื่องที่ความเร็ว 384 Kbps)</td></tr>
+        <tr ><td colspan="3" >-ฟรี SMS 50 ข้อความ</td></tr>
+        <tr ><td colspan="3" >ค่าบริการส่วนเกิน</td></tr>
+        <tr ><td colspan="3" >- SMS ข้อความละ 2 บาท</td></tr>
+        <tr ><td colspan="3" >- MSS ข้อความละ 6 บาท</td></tr>
+        <tr ><td colspan="3" >- VDO Call นาทีละ 1.50 บาท</td></tr>
+        <tr ><td colspan="3" ><b>หมายเหตุ :</b> ไม่รวมการโทรระหว่างประเทศ, บริการโรมมิ่ง, บริการเสียง, บริการหมายเลขพิเศษ และบริการส่งเสริมการขายอื่นๆ ที่นอกเหนือจากสิทธิพิเศษที่กล่าวข้างต้นรวมถึงค่าธรรมเนียมอื่นๆ เช่น ค่าธรรมเนียมการเ้ปลี่ยนแพ็กเกจ ค่าบริการดาวน์โหลด ค่าบริการดาวน์โหลดของผู้บริการ เป็นต้น</td></tr>
+        <tr height="50px" ><td colspan="3" ></td></tr>
+        <tr ><td colspan="3" ><b>หมายเหตุ :-</b> ยอดตามใบแจ้งหนี้ค่าใช้บริการ จะถูกหักจากบัญชีเงินฝากเลขที่ <%= rows[i].account_number %> ในวันที่ <%= rows[i].cut_date %><br>โปรดนำเงินเข้าบัญชีก่อนวันตัดชำระค่าบริการ</td></tr>
+    </tbody>
+</table>
+<% } %>
