@@ -71,11 +71,18 @@ const Login: React.FC = () => {
         const defaultloginSuccessMessage = intl.formatMessage({
           id: 'pages.login.success',
         });
+        // console.log(defaultloginSuccessMessage)
         message.success(defaultloginSuccessMessage);
+        // message.warn(defaultloginSuccessMessage);
         await fetchUserInfo();
         goto();
         return;
         setUserLoginState(msg);
+      }else{
+        const defaultloginSuccessMessage = intl.formatMessage({
+          id: 'pages.login.failure',
+        });
+        message.error(defaultloginSuccessMessage);
       }
     } catch (error) {
       const defaultloginFailureMessage = intl.formatMessage({

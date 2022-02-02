@@ -2,7 +2,7 @@
 /* eslint-disable */
 import { request } from 'umi';
 
-const urlBackend = `http://localhost:5000`;
+const urlBackend = `http://localhost:3000`;
 
 export async function currentUser(options?: { [key: string]: any }) {
   const token = localStorage.getItem('token');

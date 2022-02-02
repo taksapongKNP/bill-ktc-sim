@@ -206,7 +206,7 @@ export const SurveyTable: React.FC<any> = () => {
     }
     const excelId = await getDataexport(dataid);
     if (excelId) {
-      window.open(`http://localhost:5000/api/download/excel/${excelId}`);
+      window.open(`http://localhost:3000/api/download/excel/${excelId}`);
     }
   };
   const handleNameModel = (value: string) => {

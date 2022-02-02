@@ -68,7 +68,7 @@ export const BillingTable: React.FC<any> = () => {
             id:iD
           };
           const data = JSON.stringify(json);
-          window.open(`http://localhost:5000/api/billing/pdf/${data}`);
+          window.open(`http://localhost:3000/api/billing/pdf/${data}`);
         }
 
       };
@@ -138,8 +138,8 @@ export const BillingTable: React.FC<any> = () => {
     };
     const data = JSON.stringify(json);
     // const buffer = await exportPdfByDate(data);
-    // window.open(`http://localhost:5000/api/billing/pdfByDate`);
-    window.open(`http://localhost:5000/api/billing/pdfByDate/${data}`);
+    // window.open(`http://localhost:3000/api/billing/pdfByDate`);
+    window.open(`http://localhost:3000/api/billing/pdfByDate/${data}`);
     
   }
   
@@ -158,8 +158,8 @@ export const BillingTable: React.FC<any> = () => {
       };
       var pathdata = JSON.stringify(pathJson);
       setLoadingPage(false);
-      console.log(`url : http://localhost:5000/api/billing/downloadFileByPath/${pathdata}`);
-      w.location.href = `http://localhost:5000/api/billing/downloadFileByPath/${pathdata}`;
+      console.log(`url : http://localhost:3000/api/billing/downloadFileByPath/${pathdata}`);
+      w.location.href = `http://localhost:3000/api/billing/downloadFileByPath/${pathdata}`;
     })
     
     
