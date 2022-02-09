@@ -321,6 +321,11 @@
   dependencies:
     "precond" "0.2"
 
+"bahttext@^2.1.0":
+  "integrity" "sha512-OGk4gfhPlhebPVY4AE0vwGANnXlDl0pB6rHwMk9nqDEE3J8nd3wuyD/oNnYI+PcfYVqk5C2WC8x/26U8rkBRkQ=="
+  "resolved" "https://registry.npmjs.org/bahttext/-/bahttext-2.1.0.tgz"
+  "version" "2.1.0"
+
 "balanced-match@^1.0.0":
   "integrity" "sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw=="
   "resolved" "https://registry.npmjs.org/balanced-match/-/balanced-match-1.0.2.tgz"
@@ -1629,6 +1634,11 @@
   "integrity" "sha1-FQStJSMVjKpA20onh8sBQRmU6k8="
   "resolved" "https://registry.npmjs.org/fs.realpath/-/fs.realpath-1.0.0.tgz"
   "version" "1.0.0"
+
+"fsevents@~2.3.2":
+  "integrity" "sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA=="
+  "resolved" "https://registry.npmjs.org/fsevents/-/fsevents-2.3.2.tgz"
+  "version" "2.3.2"
 
 "fstream@^1.0.12":
   "integrity" "sha512-WvJ193OHa0GHPEL+AycEJgxvBEwyfRkN1vhjca23OaPVMCaLCXTd5qAu82AjTcgP1UJmytkOKb63Ypde7raDIg=="

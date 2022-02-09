@@ -107,5 +107,12 @@ module.exports = {
       const dataList =  db.sequelize.query(`SELECT * FROM db_billing  WHERE STR_TO_DATE(bill_cycle_start,'%d/%m/%Y')  BETWEEN STR_TO_DATE('${startDate}','%d/%m/%Y') AND STR_TO_DATE('${endDate}','%d/%m/%Y')  `, { type: QueryTypes.SELECT });
       resolve(dataList);
     });
+  },
+  findInvoiceByBillCycleStart: (startDate,endDate) => {
+    console.log(startDate+" - "+endDate)
+    return new Promise((resolve, reject) => {
+      const dataList =  db.sequelize.query(`SELECT * FROM db_invoice  WHERE STR_TO_DATE(bill_cycle_start,'%d/%m/%Y')  BETWEEN STR_TO_DATE('${startDate}','%d/%m/%Y') AND STR_TO_DATE('${endDate}','%d/%m/%Y')  `, { type: QueryTypes.SELECT });
+      resolve(dataList);
+    });
   }
 }

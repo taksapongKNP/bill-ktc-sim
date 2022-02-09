@@ -306,9 +306,11 @@ export async function updateDetailsurvey(data: any) {
   });
 }
 
+
+//Statement
 export async function getdataBilling (){
   const token = localStorage.getItem('token');
-  return request<any>(`${urlBackend}/api/billing`, {
+  return request<any>(`${urlBackend}/api/billing/statement`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -317,7 +319,7 @@ export async function getdataBilling (){
 }
 
 export async function downloadPdfBilling(data: any) {
-  return request<any>(`${urlBackend}/api/billing/pdf/${data}`, {
+  return request<any>(`${urlBackend}/api/billing/statement/pdf/${data}`, {
     method: 'GET',
     data: data,
     ...(data || {}),
@@ -325,28 +327,42 @@ export async function downloadPdfBilling(data: any) {
 }
 
 export async function getdataBillingByDate (data: any){
-  return request<any>(`${urlBackend}/api/billing/findByDate/${data}`, {
+  return request<any>(`${urlBackend}/api/billing/statement/findByDate/${data}`, {
     method: 'POST',
     data: data,
     ...(data || {}),
   })
 }
 
-export async function exportPdfByDate (data: any){
-  return request<any>(`${urlBackend}/api/billing/pdfByDate/${data}`, {
-    method: 'GET',
-    data: data,
-    ...(data || {}),
-  })
-}
+// export async function exportPdfByDate (data: any){
+//   return request<any>(`${urlBackend}/api/billing/statement/pdfByDate/${data}`, {
+//     method: 'GET',
+//     data: data,
+//     ...(data || {}),
+//   })
+// }
 
 export async function exportZipByDate (data: any){
-  return request<any>(`${urlBackend}/api/billing/zipByDate/${data}`, {
+  return request<any>(`${urlBackend}/api/billing/statement/zipByDate/${data}`, {
     method: 'GET',
     data: data,
     ...(data || {}),
   })
 }
+//Invoice
 
+export async function getdataInvoiceByDate (data: any){
+  return request<any>(`${urlBackend}/api/billing/invoice/findByDate/${data}`, {
+    method: 'POST',
+    data: data,
+    ...(data || {}),
+  })
+}
 
-
+export async function exportZipInvoiceByDate (data: any){
+  return request<any>(`${urlBackend}/api/billing/invoice/zipByDate/${data}`, {
+    method: 'GET',
+    data: data,
+    ...(data || {}),
+  })
+}

@@ -105,9 +105,9 @@ const Login: React.FC = () => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.lang} data-lang>
+      {/* <div className={styles.lang} data-lang>
         {SelectLang && <SelectLang />}
-      </div>
+      </div> */}
       <div className={styles.content}>
         <div className={styles.top}>
           <div className={styles.header}>

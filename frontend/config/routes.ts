@@ -15,6 +15,7 @@
       },
     ],
   },
+  
   // {
   //   path: '/home',
   //   name: 'Home',
@@ -29,11 +30,18 @@
   //   component: './Servey',
   // },
   {
-    name: 'Billing',
+    name: 'Statement',
     icon: 'fileText',
-    path: '/billing',
+    path: '/billing/statement',
     component: './Billing',
   },
+  {
+    name: 'Invoice',
+    icon: 'fileText',
+    path: '/billing/invoice',
+    component: './Invoice',
+  },
+  
   // {
   //   path: '/setting',
   //   name: 'Setting',
@@ -51,7 +59,7 @@
   // },
   {
     path: '/',
-    redirect: '/billing',
+    component: './Home',
   },
   {
     component: './404',

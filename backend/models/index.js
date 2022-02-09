@@ -1,6 +1,8 @@
 const { Sequelize } = require("sequelize");
 const { dbDev } = require("../config/index");
 
+console.log(`this host is : ${dbDev.HOST}`)
+
 const sequelize = new Sequelize(dbDev.DB, dbDev.USER, dbDev.PASSWORD, {
   host: dbDev.HOST,
   port: 3306,

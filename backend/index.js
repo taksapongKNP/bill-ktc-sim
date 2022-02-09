@@ -11,6 +11,7 @@ const port = 3000;
 const Excel = require("exceljs");
 const fs = require("fs");
 server.use("/font", express.static(__dirname +'/templates/fonts/'));
+server.use("/templates/images", express.static(__dirname +'/templates/image/'));
 server.use("/api/users", require("./routes/rounter.users.js"));
 server.use("/api/survey", require("./routes/rounter.survey.js"));
 server.use("/api/surveyDetails", require("./routes/rounter.surveyDetails.js"));

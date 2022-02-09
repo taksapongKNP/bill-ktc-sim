@@ -1,12 +1,12 @@
 import { Table, Row,Col,  Input, DatePicker,Button ,Space ,Spin} from 'antd';
 import React, { useState, useEffect, useRef } from 'react';
-import { getdataBilling,getdataBillingByDate,exportZipByDate} from '@/services/backend/api';
+import { getdataInvoiceByDate,exportZipByDate} from '@/services/backend/api';
 
 import { SearchOutlined, FilePdfOutlined, DownloadOutlined ,FileZipOutlined } from '@ant-design/icons';
 import { replace } from 'lodash';
 
 const { RangePicker } = DatePicker;
-export const BillingTable: React.FC<any> = () => {
+export const InvoiceTable: React.FC<any> = () => {
   
     const columns = [
         {
@@ -67,7 +67,7 @@ export const BillingTable: React.FC<any> = () => {
             id:iD
           };
           const data = JSON.stringify(json);
-          window.open(`http://localhost:3000/api/billing/statement/pdf/${data}`);
+          window.open(`http://localhost:3000/api/billing/invoice/pdf/${data}`);
         }
 
       };
@@ -89,7 +89,7 @@ export const BillingTable: React.FC<any> = () => {
       startDate: dateString[0],
       endDate: dateString[1]
     };
-    const dataList = await getdataBillingByDate(data);
+    const dataList = await getdataInvoiceByDate(data);
     
     (async function fetchdata() {
             const result = dataList;
@@ -137,8 +137,8 @@ export const BillingTable: React.FC<any> = () => {
     };
     const data = JSON.stringify(json);
     // const buffer = await exportPdfByDate(data);
-    // window.open(`http://localhost:3000/api/billing/statement/pdfByDate`);
-    window.open(`http://localhost:3000/api/billing/statement/pdfByDate/${data}`);
+    // window.open(`http://localhost:3000/api/billing/invoice/pdfByDate`);
+    window.open(`http://localhost:3000/api/billing/invoice/pdfByDate/${data}`);
     
   }
   
@@ -157,8 +157,8 @@ export const BillingTable: React.FC<any> = () => {
       };
       var pathdata = JSON.stringify(pathJson);
       setLoadingPage(false);
-      // console.log(`url : http://localhost:3000/api/billing/statement/downloadFileByPath/${pathdata}`);
-      w.location.href = `http://localhost:3000/api/billing/statement/downloadFileByPath/${pathdata}`;
+      // console.log(`url : http://localhost:3000/api/billing/invoice/downloadFileByPath/${pathdata}`);
+      w.location.href = `http://localhost:3000/api/billing/invoice/downloadFileByPath/${pathdata}`;
     })
     
     

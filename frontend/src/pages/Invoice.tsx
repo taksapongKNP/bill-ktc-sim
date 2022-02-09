@@ -3,9 +3,7 @@ import { PageContainer } from '@ant-design/pro-layout';
 import { Card, Alert,Row, Typography, Tabs } from 'antd';
 import { useIntl, FormattedMessage } from 'umi';
 
-import { BillingTable } from './billing-Table';
-// import { SurveyCreate } from './survey-Create';
-// import { SurveyForm } from './survey-Form';
+import { InvoiceTable } from './invoice-Table';
 
 const { TabPane } = Tabs;
 
@@ -17,14 +15,8 @@ export default (): React.ReactNode => {
       <Card>
         <Tabs defaultActiveKey="1">
           <TabPane tab="Export" key="1">
-          <BillingTable />
+          <InvoiceTable />
           </TabPane>
-          {/* <TabPane tab="Create Survey" key="2">
-            bbb
-          </TabPane> */}
-          {/* <TabPane tab="Servay Form" key="3">
-            <SurveyForm />
-          </TabPane> */}
         </Tabs>
       </Card>
     </PageContainer>

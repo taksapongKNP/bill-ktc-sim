@@ -22,7 +22,7 @@ const GlobalHeaderRight: React.FC = () => {
     className = `${styles.right}  ${styles.dark}`;
   }
   return (
-    <Space className={className}>
+    <Space className={`${styles.right}  ${styles.dark}`}>
       <HeaderSearch
         className={`${styles.action} ${styles.search}`}
         placeholder="站内搜索"

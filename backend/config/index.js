@@ -19,9 +19,9 @@ module.exports = {
   },
   Local: {
     HOST: "localhost",
-    USER: "root",
-    PASSWORD: "",
-    DB: "osd_dservice",
+    USER: "osdadmin",
+    PASSWORD: "password",
+    DB: "bill_sim_ktc",
     dialect: "mysql",
     pool: {
       max: 5,

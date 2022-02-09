@@ -4,12 +4,12 @@ const { v4: uuidv4 } = require("uuid");
 const PDFDocument = require("pdfkit");
 const fs = require("fs");
 const JSZip = require("jszip");
-const bahttext =require("bahttext");
+
 const pdf = require('html-pdf');
 var htmlToPdf = require("html-pdf-node");
 const ejs = require("ejs");
 
-exports.findStatementAll = async (req, res) => {
+exports.findAll = async (req, res) => {
   billingService
     .findAll()
     .then((data) => {
@@ -22,7 +22,7 @@ exports.findStatementAll = async (req, res) => {
     });
 };
 
-exports.findStatementByDate = async (req, res) => {
+exports.findByDate = async (req, res) => {
   const { startDate, endDate } = req.body;
   billingService
     .fileByBillCycleStart(startDate, endDate)
@@ -37,7 +37,7 @@ exports.findStatementByDate = async (req, res) => {
   // res.send("success");
 };
 
-exports.exportStatement = async (req, res) => {
+exports.export = async (req, res) => {
   const json = JSON.parse(req.params.data);
   const startDate = json.startDate.replaceAll("|", "/");
   const endDate = json.endDate.replaceAll("|", "/");
@@ -56,7 +56,6 @@ exports.exportStatement = async (req, res) => {
   var html = "";
   for (var i = 0; i < dataList.length; i++) {
     var phone = dataList[i].cust_mobile.trim();
-    var invoice = dataList[i].invoice_no.trim();
     var detailList = await billingSubService
       .fileByDateAndPhone(phone, startDate, endDate)
       .then((data) => {
@@ -69,7 +68,7 @@ exports.exportStatement = async (req, res) => {
         return data;
       });
     html += await ejs.renderFile(
-      "./templates/pdfTemplateByDate.html.ejs",
+      "./templates/pdfTemplateByDate.html",
       {
         rows: dataList[i],
         detail: detailList,
@@ -81,19 +80,22 @@ exports.exportStatement = async (req, res) => {
   let options = { format: "A4" };
   let file = { content: html };
 
-  pdf.create(html, options).toStream(
-    (err, stream) => {
-      // res.setHeader('Content-Type', 'application/pdf')
-      res.set({
-            "Content-Type": "application/pdf; charset=utf-8;",
-            "Content-Disposition": "attachment;filename=Statement_"+invoice+".pdf"
-          })
-      stream.pipe(res)
-    }
-  )
+  htmlToPdf
+    .generatePdf(file, options)
+    .then((pdfBuffer) => {
+      res
+        .writeHead(200, {
+          "Content-Type": "application/pdf",
+          "Content-Disposition": "attachment;",
+        })
+        .end(pdfBuffer);
+    })
+    .catch((err) => {
+      res.send({ success: false, err: err });
+    });
 };
 
-exports.pdfStatementByDate = async (req, res) => {
+exports.pdfByDate = async (req, res) => {
 
   const json = JSON.parse(req.params.data);
   // console.log(json.startDate.replaceAll('|','/'));
@@ -141,22 +143,39 @@ exports.pdfStatementByDate = async (req, res) => {
 
   let options = {format: "A4"};
   let  file = {content: html};
-  pdf.create(html, options).toStream(
-    (err, stream) => {
-      // res.setHeader('Content-Type', 'application/pdf')
-      res.set({
-            "Content-Type": "application/pdf; charset=utf-8;",
-            "Content-Disposition": "attachment;filename=Invoice_"+startDate+"-"+endDate+".pdf"
-          })
-      stream.pipe(res)
-    }
-  )
+  // pdf.create(html, options).toStream(
+  //   (err, stream) => {
+  //     // res.setHeader('Content-Type', 'application/pdf')
+  //     res.set({
+  //           "Content-Type": "application/pdf; charset=utf-8;",
+  //           "Content-Disposition": "attachment;filename=Billing.pdf"
+  //         })
+  //     stream.pipe(res)
+  //   }
+  // )
+  htmlToPdf
+  .generatePdf(file, options)
+  .then((pdfBuffer)=>{
+    console.log(pdfBuffer);
+    // res.send(pdfBuffer);
+    res.writeHead(200,{
+      "Content-Type": "application/pdf; charset=utf-8;",
+      "Content-Disposition": "attachment;filename=Billing.pdf"
+    })
+    .end(pdfBuffer);
+    // stream.pipe(response)
+    // res.send({success:false, false:pdfBuffer.toString('utf8')});
+    
+  })
+  .catch((err) => {
+    res.send({success:false,err:err});
+  });
 
 };
 
-exports.zipStatementByDate = async (req, res) => {
+exports.zipByDate = async (req, res) => {
   const uid = uuidv4();
-  const filepath = "./files/zipStatement_" + uid + ".zip";
+  const filepath = "./files/bill_" + uid + ".zip";
   const json = JSON.parse(req.params.data);
   // console.log(json.startDate.replaceAll('|','/'));
   const startDate = json.startDate.replaceAll("|", "/");
@@ -190,7 +209,7 @@ exports.zipStatementByDate = async (req, res) => {
 
     console.log(phone);
     var html = await ejs.renderFile(
-      "./templates/zipTemplateByDate.html.ejs",
+      "./templates/pdfTemplateByDate.html.ejs",
       {
         rows: dataList[i],
         detail: detailList,
@@ -207,7 +226,7 @@ exports.zipStatementByDate = async (req, res) => {
 
   var zip = new JSZip();
   for (var i = 0; i < dataList.length; i++) {
-    zip.file("Statement" + invoiceNo[i] + ".pdf", buffer[i], { base64: true });
+    zip.file("BILL_" + invoiceNo[i] + ".pdf", buffer[i], { base64: true });
   }
   zip.generateAsync({ type: "nodebuffer" }).then(function (content) {
     // see FileSaver.js
@@ -217,7 +236,7 @@ exports.zipStatementByDate = async (req, res) => {
   res.send(filepath.replaceAll("/", "|"));
 };
 
-exports.downloadStatementFileByPath = async (req, res) => {
+exports.downloadFileByPath = async (req, res) => {
   console.log("download");
   const json = JSON.parse(req.params.pathdata);
   const path = json.path.replaceAll("|", "/");
@@ -233,7 +252,7 @@ exports.downloadStatementFileByPath = async (req, res) => {
   }
 };
 
-exports.exportStatementbyDate = async (req, res) => {
+exports.exportbyDate = async (req, res) => {
   res
     .writeHead(200, {
       "Content-Type": "application/pdf",
@@ -242,91 +261,6 @@ exports.exportStatementbyDate = async (req, res) => {
     .send(req.params.buffer);
 };
 
-
-
-
-
-//Invoices 
-exports.findInvoiceByDate = async (req, res) => {
-  const { startDate, endDate } = req.body;
-  billingService
-    .findInvoiceByBillCycleStart(startDate, endDate)
-    .then((data) => {
-      res.send(data);
-    })
-
-    .catch((err) => {
-      console.log(err);
-      res.status(500).send(err);
-    });
-  // res.send("success");
-};
-
-exports.pdfInvoiceByDate = async (req, res) => {
-  // const nowDate = Date.now();
-  let date_ob = new Date();
-  let date = ("0" + date_ob.getDate()).slice(-2);
-  let month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
-  let year = date_ob.getFullYear();
-  
-  let nowDate = date+"/"+month+"/"+(year);
-  const json = JSON.parse(req.params.data);
-  // console.log(json.startDate.replaceAll('|','/'));
-  const startDate = json.startDate.replaceAll('|','/');
-  const endDate = json.endDate.replaceAll('|','/');
-  console.log('export to PDF form : '+startDate+' '+endDate);
-
-  let bathText = '';
-  let feeAmt =0;
-  let allAmt =0;
-  const dataList = await billingService.findInvoiceByBillCycleStart(startDate, endDate)
-  .then((data) => {
-    return data;
-  })
-
-  .catch((err) => {
-    console.log(err);
-    res.status(500).send(err);
-  });
-console.log(dataList)
-  var html=""
-  for(var i = 0; i < dataList.length; i++){
-    feeAmt = (Math.round((dataList[i].vat)*100)/100);
-    allAmt = Number(Math.round((dataList[i].amount)*100)/100).toFixed(2);
-    bathText = bahttext.bahttext(allAmt) ;
-
-    html += await ejs.renderFile(
-      "./templates/pdfTemplateInvoice.html.ejs",
-      {
-        rows: dataList[i],
-        nowDate : nowDate,
-        feeAmt:feeAmt,
-        allAmt:allAmt,
-        bathText:bathText,
-      },
-      {async :true},"utf8"
-    );
-  }
-
-  let options = {format: "A4"};
-  let  file = {content: html};
-  pdf.create(html, options).toStream(
-    (err, stream) => {
-      // res.setHeader('Content-Type', 'application/pdf')
-      res.set({
-            "Content-Type": "application/pdf; charset=utf-8;",
-            "Content-Disposition": "attachment;filename=Invoice_"+startDate+"-"+endDate+".pdf"
-          })
-      stream.pipe(res)
-    }
-  )
-
-};
-
-
-
-
-//Function
 function getBuffer(file, options) {
   var buffer = htmlToPdf
     .generatePdf(file, options)
@@ -340,6 +274,70 @@ function getBuffer(file, options) {
   return buffer;
 }
 
+exports.pdfInvoiceByDate = async (req, res) => {
 
+  const json = JSON.parse(req.params.data);
+  // console.log(json.startDate.replaceAll('|','/'));
+  const startDate = json.startDate.replaceAll('|','/');
+  const endDate = json.endDate.replaceAll('|','/');
+  console.log('export to PDF form : '+startDate+' '+endDate);
 
+  
+  const dataList = await billingService.findInvoiceByBillCycleStart(startDate, endDate)
+  .then((data) => {
+    return data;
+  })
 
+  .catch((err) => {
+    console.log(err);
+    res.status(500).send(err);
+  });
+
+  var html=""
+  for(var i = 0; i < dataList.length; i++){
+
+    var phone = dataList[i].cust_mobile.trim();
+    var detailList = await billingSubService.fileByDateAndPhone(phone,startDate, endDate)
+    .then((data) => {
+      return data;
+    });
+
+    var groupList = await billingSubService.fileGroupByDateAndPhone(phone,startDate, endDate)
+    .then((data) => {
+      return data;
+    });
+
+    console.log(phone);
+    console.log(groupList);
+    html += await ejs.renderFile(
+      "./templates/pdfTemplateByDate.html.ejs",
+      {
+        rows: dataList[i],
+        detail : detailList,
+        group : groupList
+      },
+      {async :true},"utf8"
+    );
+  }
+
+  let options = {format: "A4"};
+  let  file = {content: html};
+  htmlToPdf
+  .generatePdf(file, options)
+  .then((pdfBuffer)=>{
+    console.log(pdfBuffer);
+    // res.send(pdfBuffer);
+    res.writeHead(200,{
+      "Content-Type": "application/pdf; charset=utf-8;",
+      "Content-Disposition": "attachment;filename=Billing.pdf"
+    })
+    .end(pdfBuffer);
+    // stream.pipe(response)
+    // res.send({success:false, false:pdfBuffer.toString('utf8')});
+    
+  })
+  .catch((err) => {
+    res.send({success:false,err:err});
+  });
+
+};

@@ -1,57 +1,548 @@
 <!DOCTYPE html>
-<html>
+
 <head>
-    <meta charset='utf-8'>
-    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
-    <title>Page Title</title>
-    <meta name='viewport' content='width=device-width, initial-scale=1'>
-    <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
-    <script src='main.js'></script>
-    <link rel="stylesheet" media="screen" href="https://fontlibrary.org//face/thsarabun-new" type="text/css"/>
-    <!-- <link  href="http://localhost:3000/getCssTemplate"  rel='stylesheet' type='text/css'> -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <!-- CSS only -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" >
+        <!-- <link  href="https://cdn.jsdelivr.net/npm/chart.js@3.3.2/dist/chart.min.js"  rel='stylesheet' > -->
+        <!-- <link rel="stylesheet" media="screen" href="https://fontlibrary.org//face/thsarabun-new" type="text/css"/> -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
+    <style>
+        *{
+            font-family: 'Sarabun', sans-serif;
+        }
+    </style>
 </head>
-<style>
-    
-    body{ font-family: 'THSarabunNewRegular', sans-serif !important;}
-        </style>
-    
-<body style="margin: 20px;">
-    <h5 class="text-center">ใบแจ้งค่าใช้บริการ (STATEMENT)</h5>
-    <table class="table " style="font-size:13px;">
-        <thead>
-            <tr>
-                <th style="border : 1px solid #000;" width="80%" class="text-center">รวมค่าบริการรอบปัจจุบัน<br>(Summary of Current Charges)</th>
-                <th style="border : 1px solid #000;" width="20%"  class="text-center">จำนวนเงิน<br>(Amount)</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr style="height:300px">
-                <td  style="border : 1px solid #000;">
-                </td>
-                <td  style="border : 1px solid #000;" class="text-center">
-                </td>
-            </tr>
-            <tr>
-                <td style="border : 0px solid !important;">
-                </td>
-                <td  style="border : 1px solid #000;" class="text-center">
-                </td>
-            </tr>
-            <tr>
-                <td style="border : 0px solid !important;">
-                </td>
-                <td  style="border : 1px solid #000;" class="text-center">
-                </td>
-            </tr>
-            <tr>
-                <td style="border : 0px solid !important;">
-                </td>
-                <td  style="border : 1px solid #000;" class="text-center">
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+<body >
+
+    <div style="page-break-before:always;margin: 15px 20px 15px 20px;">
+        <div class="row">
+            <div class="col-12" >
+                <img src="http://94.74.116.66/test/Picture1.jpg" width="100%" height="90px" \>
+            </div>
+        </div>
+        <br \>
+        <div class="row">
+            <div class="col-12" >
+
+                <h5 class="text-center">ใบแจ้งค่าใช้บริการ (STATEMENT)</h5>
+
+                    <table style="font-size:11px">
+
+                        <tr>
+                            <td width="50%">ชื่อลูกค้า คุณฐิดาภรณ์ เอี่ยมบุณฑริก
+                            </td>
+                            <td width="15%">&nbsp;</td>
+                            <td width="20%">รหัสลูกค้า (Account No.)</td>
+                            <td width="15%">
+                                S-0444
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="50%">ที่อยู่ เลขที่ 529 ถนนประชาอุทิศ แขวงสามเสนนอก เขตห้วยขวาง กรุงเทพมหานคร 10310
+                            </td>
+                            <td width="15%">&nbsp;</td>
+                            <td width="20%">เลขที่ (Invoice No)</td>
+                            <td width="15%">
+                                DB2201-033
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="50%">เลขประจำตัวผู้เสียภาษี 0105546127022
+                            </td>
+                            <td width="15%">&nbsp;</td>
+                            <td width="20%">วันที่ (Issue Date)</td>
+                            <td width="15%">
+                                15/01/2022
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td width="50%">
+                                0830974933
+                            </td>
+                            <td colspan="3" width="50%">สรุปรายการค่าใช้บริการ (Bill Cycle) &nbsp;&nbsp;&nbsp;01/12/2021 - 31/12/2021
+                            </td>
+                        </tr>
+                    </table>
+
+                    <table class="table table-bordered border-dark" style="font-size:11px;">
+                        <thead>
+                            <tr>
+                                <th class="text-center">ค่าบริการค้างชำระ<br>(Outstanding Balance)</th>
+                                <th class="text-center">ค่าบริการที่ชำระแล้ว<br>(Paid amount)</th>
+                                <th class="text-center">ค่าใช้บริการรอบปัจจุบัน<br>(Current charge)</th>
+                                <th class="text-center">ยอดรวมที่ต้องชำระทั้งสิ้น<br>(Total Outstanding balance)</th>
+                                <th class="text-center">วันครบกำหนดชำระ<br>(Current Due date)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="text-center">
+
+                                    0.00
+
+
+                                </td>
+                                <td class="text-center">
+
+                                    0.00
+
+                                </td>
+                                <td class="text-center">
+
+                                    137.33
+
+                                </td>
+                                <td class="text-center">
+
+                                    137.33
+
+
+                                </td>
+                                <td class="text-center">
+                                    25/01/2022
+
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <table class="" style="font-size:11px;width:100%;">
+                        <thead>
+                            <tr>
+                                <th colspan="2" style="border : 1px solid #000 !important;" width="80%"
+                                    class="text-center">รวมค่าบริการรอบปัจจุบัน<br>(Summary of Current Charges)</th>
+                                <th colspan="2" style="border : 1px solid #000 !important;" width="20%"
+                                    class="text-center">จำนวนเงิน<br>(Amount)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="height:280px;" valign="top">
+                                <td colspan="2" style="border : 1px solid #000 !important;" align="left" valign="top">
+
+                                        &nbsp;&nbsp;&nbsp;ค่าบริการส่วนเกินโปรโมชั่น รอบ 01/12/2021 - 31/12/2021
+                                        <br />
+
+
+
+
+
+
+
+
+
+                                </td>
+                                <td colspan="2" style="border : 1px solid #000 !important;text-align : right;">
+
+
+                                        128.35&nbsp;&nbsp;&nbsp;
+                                        <br />
+
+
+
+
+
+
+
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="50%">Promotion :</td>
+                                <td width="20%">จำนวนเงิน</td>
+                                <td style="border : 1px solid #000 !important;text-align : right;">
+                                    128.35&nbsp;&nbsp;&nbsp;
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="50%">-โทรในเครือข่าย AIS ฟรี 24 ชั่วโมง </td>
+                                <td width="20%">ภาษีมูลค่าเพิ่ม 7 %</td>
+                                <td style="border : 1px solid #000 !important;text-align : right;">
+                                    8.98&nbsp;&nbsp;&nbsp;
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="50%">-โทรนอกเครือข่ายฟรี 08:00 น.-19:59 น. นอกเวลานาทีละ 0.85 บาท</td>
+                                <td width="20%">รวมค่าใช้บริการการรอบปัจจุบัน</td>
+                                <td style="border : 1px solid #000 !important;text-align : right;" >
+                                    137.33&nbsp;&nbsp;&nbsp;
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="3">-ใช้งานอินเตอร์เน็ต 40 GB (หลังจากนั้นใช้งานได้ต่อเนื่องที่ความเร็ว 384
+                                    Kbps)</td>
+                            </tr>
+                            <tr>
+                                <td colspan="3">-ฟรี SMS 50 ข้อความ</td>
+                            </tr>
+                            <tr>
+                                <td colspan="3">ค่าบริการส่วนเกิน</td>
+                            </tr>
+                            <tr>
+                                <td colspan="3">- SMS ข้อความละ 2 บาท</td>
+                            </tr>
+                            <tr>
+                                <td colspan="3">- MSS ข้อความละ 6 บาท</td>
+                            </tr>
+                            <tr>
+                                <td colspan="3">- VDO Call นาทีละ 1.50 บาท</td>
+                            </tr>
+                            <tr>
+                                <td colspan="3"><b>หมายเหตุ :</b> ไม่รวมการโทรระหว่างประเทศ, บริการโรมมิ่ง, บริการเสียง,
+                                    บริการหมายเลขพิเศษ และบริการส่งเสริมการขายอื่นๆ
+                                    ที่นอกเหนือจากสิทธิพิเศษที่กล่าวข้างต้นรวมถึงค่าธรรมเนียมอื่นๆ เช่น
+                                    ค่าธรรมเนียมการเ้ปลี่ยนแพ็กเกจ ค่าบริการดาวน์โหลด ค่าบริการดาวน์โหลดของผู้บริการ
+                                    เป็นต้น</td>
+                            </tr>
+                            <tr height="50px">
+                                <td colspan="3"></td>
+                            </tr>
+                            <tr>
+                                <td colspan="3"><b>หมายเหตุ :-</b> ยอดตามใบแจ้งหนี้ค่าใช้บริการ
+                                    จะถูกหักจากบัญชีเงินฝากเลขที่ 660-5-xxxxx-8  ในวันที่ 25/01/2022<br>โปรดนำเงินเข้าบัญชีก่อนวันตัดชำระค่าบริการ</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+            </div>
+
+        </div>
+        <div class="row" style="margin-top:100px">
+            <div class="col-12" >
+                <img src="http://94.74.116.66/test/Picture2.jpg" width="100%" height="80px" \>
+            </div>
+        </div>
+    </div>
+
+
+    <div style="page-break-before:always;margin:20px;font-size:11px;">
+
+        <div class="row">
+            <div class="col-6">
+                รายละเอียดการใช้บริการ คุณฐิดาภรณ์ เอี่ยมบุณฑริก
+            </div>
+            <div class="col-5">
+                รายละเอียดการใช้บริการ คุณฐิดาภรณ์ เอี่ยมบุณฑริก
+            </div>
+            <div class="col-1" style="text-align:right">
+                2/2
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+
+                <table class="table table-bordered border-dark" style="font-size:11px;" width="100%" >
+                    <thead>
+                        <tr>
+                            <td class="text-center" style="width: 25%;">หมายเลข</td>
+                            <td class="text-center" style="width: 22%;">เวลา</td>
+                            <td class="text-center" style="width: 20%;">วัน เดือน ปี</td>
+                            <td class="text-center" style="width: 13%;">หน่วย</td>
+                            <td class="text-center" style="width: 20%;">จำนวนเงิน</td>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+
+
+
+
+
+
+            <div class="col-12">
+                เลขหมาย 0830974933<br>
+
+                ค่าบริการส่วนเกินโปรโมชั่น
+
+
+                <!--  -->
+
+                <table style="font-size:11px;" width="100%" >
+
+
+                    <tr>
+                        <td class="text-left" style="width: 25%;">0866235395</td>
+                        <td class="text-center" style="width: 22%;">20:17:40</td>
+                        <td class="text-center" style="width: 20%;">07/12/2021</td>
+                        <td style="width: 13%;text-align: right;">3.00</td>
+                        <td style="width: 20%;text-align: right;">2.55</td>
+                    </tr>
+                    <!--  -->
+
+
+
+
+
+
+
+                    <tr>
+                        <td class="text-left" style="width: 25%;">0866235395</td>
+                        <td class="text-center" style="width: 22%;">23:09:00</td>
+                        <td class="text-center" style="width: 20%;">11/12/2021</td>
+                        <td style="width: 13%;text-align: right;">9.00</td>
+                        <td style="width: 20%;text-align: right;">7.65</td>
+                    </tr>
+                    <!--  -->
+
+
+
+
+
+
+
+                    <tr>
+                        <td class="text-left" style="width: 25%;">0866235395</td>
+                        <td class="text-center" style="width: 22%;">23:04:55</td>
+                        <td class="text-center" style="width: 20%;">15/12/2021</td>
+                        <td style="width: 13%;text-align: right;">1.00</td>
+                        <td style="width: 20%;text-align: right;">0.85</td>
+                    </tr>
+                    <!--  -->
+
+
+
+
+
+
+
+                    <tr>
+                        <td class="text-left" style="width: 25%;">0866235395</td>
+                        <td class="text-center" style="width: 22%;">20:00:36</td>
+                        <td class="text-center" style="width: 20%;">20/12/2021</td>
+                        <td style="width: 13%;text-align: right;">5.00</td>
+                        <td style="width: 20%;text-align: right;">4.25</td>
+                    </tr>
+                    <!--  -->
+
+
+
+
+
+
+
+                    <tr>
+                        <td class="text-left" style="width: 25%;">0866235395</td>
+                        <td class="text-center" style="width: 22%;">22:28:22</td>
+                        <td class="text-center" style="width: 20%;">20/12/2021</td>
+                        <td style="width: 13%;text-align: right;">1.00</td>
+                        <td style="width: 20%;text-align: right;">0.85</td>
+                    </tr>
+                    <!--  -->
+
+
+
+
+
+
+
+                    <tr>
+                        <td class="text-left" style="width: 25%;">0639146535</td>
+                        <td class="text-center" style="width: 22%;">22:57:14</td>
+                        <td class="text-center" style="width: 20%;">20/12/2021</td>
+                        <td style="width: 13%;text-align: right;">52.00</td>
+                        <td style="width: 20%;text-align: right;">44.20</td>
+                    </tr>
+                    <!--  -->
+
+
+
+
+
+
+
+                    <tr>
+                        <td class="text-left" style="width: 25%;">0639146535</td>
+                        <td class="text-center" style="width: 22%;">21:02:12</td>
+                        <td class="text-center" style="width: 20%;">21/12/2021</td>
+                        <td style="width: 13%;text-align: right;">60.00</td>
+                        <td style="width: 20%;text-align: right;">51.00</td>
+                    </tr>
+                    <!--  -->
+
+
+
+
+
+
+
+                    <tr>
+                        <td class="text-left" style="width: 25%;">0866235395</td>
+                        <td class="text-center" style="width: 22%;">20:07:46</td>
+                        <td class="text-center" style="width: 20%;">22/12/2021</td>
+                        <td style="width: 13%;text-align: right;">1.00</td>
+                        <td style="width: 20%;text-align: right;">0.85</td>
+                    </tr>
+                    <!--  -->
+
+
+
+
+
+
+
+                    <tr>
+                        <td class="text-left" style="width: 25%;">0866235395</td>
+                        <td class="text-center" style="width: 22%;">22:11:01</td>
+                        <td class="text-center" style="width: 20%;">23/12/2021</td>
+                        <td style="width: 13%;text-align: right;">4.00</td>
+                        <td style="width: 20%;text-align: right;">3.40</td>
+                    </tr>
+                    <!--  -->
+
+
+
+
+
+
+
+                    <tr>
+                        <td class="text-left" style="width: 25%;">0866235395</td>
+                        <td class="text-center" style="width: 22%;">22:20:57</td>
+                        <td class="text-center" style="width: 20%;">23/12/2021</td>
+                        <td style="width: 13%;text-align: right;">4.00</td>
+                        <td style="width: 20%;text-align: right;">3.40</td>
+                    </tr>
+                    <!--  -->
+
+
+
+
+
+
+
+                    <tr>
+                        <td class="text-left" style="width: 25%;">0644598915</td>
+                        <td class="text-center" style="width: 22%;">22:00:51</td>
+                        <td class="text-center" style="width: 20%;">25/12/2021</td>
+                        <td style="width: 13%;text-align: right;">1.00</td>
+                        <td style="width: 20%;text-align: right;">0.85</td>
+                    </tr>
+                    <!--  -->
+
+
+
+
+
+
+
+                    <tr>
+                        <td class="text-left" style="width: 25%;">0644598915</td>
+                        <td class="text-center" style="width: 22%;">22:01:17</td>
+                        <td class="text-center" style="width: 20%;">25/12/2021</td>
+                        <td style="width: 13%;text-align: right;">1.00</td>
+                        <td style="width: 20%;text-align: right;">0.85</td>
+                    </tr>
+                    <!--  -->
+
+
+
+
+
+
+
+                    <tr>
+                        <td class="text-left" style="width: 25%;">0866235395</td>
+                        <td class="text-center" style="width: 22%;">22:27:49</td>
+                        <td class="text-center" style="width: 20%;">27/12/2021</td>
+                        <td style="width: 13%;text-align: right;">2.00</td>
+                        <td style="width: 20%;text-align: right;">1.70</td>
+                    </tr>
+                    <!--  -->
+
+
+
+
+
+
+
+                    <tr>
+                        <td class="text-left" style="width: 25%;">0866235395</td>
+                        <td class="text-center" style="width: 22%;">20:43:46</td>
+                        <td class="text-center" style="width: 20%;">28/12/2021</td>
+                        <td style="width: 13%;text-align: right;">4.00</td>
+                        <td style="width: 20%;text-align: right;">3.40</td>
+                    </tr>
+                    <!--  -->
+
+
+
+
+
+
+
+                    <tr>
+                        <td class="text-left" style="width: 25%;">0866235395</td>
+                        <td class="text-center" style="width: 22%;">20:47:57</td>
+                        <td class="text-center" style="width: 20%;">28/12/2021</td>
+                        <td style="width: 13%;text-align: right;">1.00</td>
+                        <td style="width: 20%;text-align: right;">0.85</td>
+                    </tr>
+                    <!--  -->
+
+
+
+
+
+
+
+                    <tr>
+                        <td class="text-left" style="width: 25%;">0866235395</td>
+                        <td class="text-center" style="width: 22%;">20:08:01</td>
+                        <td class="text-center" style="width: 20%;">31/12/2021</td>
+                        <td style="width: 13%;text-align: right;">1.00</td>
+                        <td style="width: 20%;text-align: right;">0.85</td>
+                    </tr>
+                    <!--  -->
+
+
+
+
+
+
+
+                    <tr>
+                        <td class="text-left" style="width: 25%;">0866235395</td>
+                        <td class="text-center" style="width: 22%;">21:42:57</td>
+                        <td class="text-center" style="width: 20%;">31/12/2021</td>
+                        <td style="width: 13%;text-align: right;">1.00</td>
+                        <td style="width: 20%;text-align: right;">0.85</td>
+                    </tr>
+                    <!--  -->
+
+
+
+
+
+
+                    <tr>
+                        <th colspan="4" style="text-align:right;">รวม</th>
+                        <!-- <th style="text-align:right"> &nbsp;&nbsp;&nbsp;151.00</th> -->
+                        <th style="text-align:right"> &nbsp;&nbsp;&nbsp;128.35</th>
+                    </tr>
+
+
+            </table>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
 </body>
-</html>>
+<!-- JavaScript Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+    crossorigin="anonymous"></script>
+
+</html>

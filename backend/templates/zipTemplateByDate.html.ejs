@@ -19,19 +19,19 @@
 
 <body >
     
-    <div style="page-break-after:always;margin: 15px 20px 15px 20px;">
+    <div style="page-break-before:always;margin: 15px 20px 15px 20px;">
         <div class="row">
             <div class="col-12" >
-                <img src="http://localhost:3000/templates/images/Picture1.jpg" width="100%" height="70px" \>
+                <img src="http://94.74.116.66/test/Picture1.jpg" width="100%" height="90px" \>
             </div>
         </div>
         <br \>
         <div class="row">
             <div class="col-12" >
 
-                <div class="text-center" style="font-size:12px;font-weight:bold;">ใบแจ้งค่าใช้บริการ (STATEMENT)</div>
+                <h5 class="text-center">ใบแจ้งค่าใช้บริการ (STATEMENT)</h5>
                 
-                    <table style="font-size:7px;width:100%;">
+                    <table style="font-size:11px">
 
                         <tr>
                             <td width="50%">ชื่อลูกค้า คุณ<%= rows.cust_name %>
@@ -73,7 +73,7 @@
                         </tr>
                     </table>
 
-                    <table class="table table-bordered border-dark" style="font-size:7px;">
+                    <table class="table table-bordered border-dark" style="font-size:11px;">
                         <thead>
                             <tr>
                                 <th class="text-center">ค่าบริการค้างชำระ<br>(Outstanding Balance)</th>
@@ -123,7 +123,7 @@
                         </tbody>
                     </table>
                     <% var sumAmt =0; %>
-                    <table class="" style="font-size:7px;width:100%;">
+                    <table class="" style="font-size:11px;width:100%;">
                         <thead>
                             <tr>
                                 <th colspan="2" style="border : 1px solid #000 !important;" width="80%"
@@ -133,7 +133,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr style="height:230px;" valign="top">
+                            <tr style="height:280px;" valign="top">
                                 <td colspan="2" style="border : 1px solid #000 !important;" align="left" valign="top">
                                     <% if (rows.over_fee != 0) { %>
                                         &nbsp;&nbsp;&nbsp;ค่าบริการส่วนเกินโปรโมชั่น รอบ <%=rows.bill_cycle_start %> - <%=rows.bill_cycle_end %>
@@ -273,28 +273,31 @@
             </div>
 
         </div>
-        <div class="row" style="margin-top:45px">
+        <div class="row" style="margin-top:100px">
             <div class="col-12" >
-                <img src="http://localhost:3000/templates/images/Picture2.jpg" width="100%" height="60px" \>
+                <img src="http://94.74.116.66/test/Picture2.jpg" width="100%" height="80px" \>
             </div>
         </div>
     </div>
 
 <% if(detail.length > 0 ){ %>
-    <div style="page-break-after:always;margin:20px;font-size:7px;">
+    <div style="page-break-before:always;margin:20px;font-size:11px;">
         <% var lastPage =Math.ceil((detail.length+(group.length*2))/60)+1; %>
-        <table width="100%" >
-            <tr>
-                <td style="width: 50%;">รายละเอียดการใช้บริการ คุณ<%= rows.cust_name %></td>
-                <td style="width: 40%;">รายละเอียดการใช้บริการ คุณ<%= rows.cust_name %></td>
-                <td style="width: 10%;text-align: right;">2/<%= lastPage %></td>
-            </tr>
-        </table>
-        
+        <div class="row">
+            <div class="col-6">
+                รายละเอียดการใช้บริการ คุณ<%= rows.cust_name %>
+            </div>
+            <div class="col-5">
+                รายละเอียดการใช้บริการ คุณ<%= rows.cust_name %>
+            </div>
+            <div class="col-1" style="text-align:right">
+                2/<%= lastPage %>
+            </div>
+        </div>
         <div class="row">
             <div class="col-12">
                 
-                <table class="table table-bordered border-dark" style="font-size:7px;" width="100%" >
+                <table class="table table-bordered border-dark" style="font-size:11px;" width="100%" >
                     <thead>
                         <tr>
                             <td class="text-center" style="width: 25%;">หมายเลข</td>
@@ -324,18 +327,22 @@
             </div>
         </div> 
     </div> 
-    <div style="page-break-after:always;margin:20px;font-size:7px;">
-        <table width="100%" > 
-            <tr>
-                <td style="width: 50%;">รายละเอียดการใช้บริการ คุณ<%= rows.cust_name %></td>
-                <td style="width: 40%;">รายละเอียดการใช้บริการ คุณ<%= rows.cust_name %></td>
-                <td style="width: 10%;text-align: right;"><%= chkpage %>/<%= lastPage %></td>
-            </tr>
-        </table>
+    <div style="page-break-before:always;margin:20px;font-size:11px;">
+        <div class="row">
+            <div class="col-6">
+                รายละเอียดการใช้บริการ คุณ<%= rows.cust_name %>
+            </div>
+            <div class="col-5">
+                รายละเอียดการใช้บริการ คุณ<%= rows.cust_name %>
+            </div>
+            <div class="col-1" style="text-align:right">
+                <%= chkpage %> /<%= lastPage %>
+            </div>
+        </div>
         <div class="row">
             <div class="col-12">
                 
-                <table class="table table-bordered border-dark" style="font-size:7px;" width="100%" >
+                <table class="table table-bordered border-dark" style="font-size:11px;" width="100%" >
                     <thead>
                         <tr>
                             <td class="text-center" style="width: 25%;">หมายเลข</td>
@@ -353,7 +360,7 @@
                 <% } %>
                 <!-- <% sumUnit =0; %> -->
                 <% sumDetail =0; %>
-                <table style="font-size:7px;" width="100%" >
+                <table style="font-size:11px;" width="100%" >
                     <% for (var x=0; x <detail.length; x++) { %>
                     <% if(group[i].gid == detail[x].service_charge_id ){ %>
                     <tr>
@@ -372,18 +379,22 @@
             </div>
         </div> 
     </div> 
-    <div style="page-break-after:always;margin:20px;font-size:7px;">
-    <table width="100%" >
-        <tr>
-            <td style="width: 50%;">รายละเอียดการใช้บริการ คุณ<%= rows.cust_name %></td>
-            <td style="width: 40%;">รายละเอียดการใช้บริการ คุณ<%= rows.cust_name %></td>
-            <td style="width: 10%;text-align: right;"><%= chkpage %>/<%= lastPage %></td>
-        </tr>
-    </table>   
+    <div style="page-break-before:always;margin:20px;font-size:11px;">
+    <div class="row">
+        <div class="col-6">
+            รายละเอียดการใช้บริการ คุณ<%= rows.cust_name %>
+        </div>
+        <div class="col-5">
+            รายละเอียดการใช้บริการ คุณ<%= rows.cust_name %>
+        </div>
+        <div class="col-1" style="text-align:right">
+            <%= chkpage %> /<%= lastPage %>
+        </div>
+    </div>
     <div class="row">
         <div class="col-12">
             
-            <table class="table table-bordered border-dark" style="font-size:7px;" width="100%" >
+            <table class="table table-bordered border-dark" style="font-size:11px;" width="100%" >
                 <thead>
                     <tr>
                         <td class="text-center" style="width: 25%;">หมายเลข</td>
@@ -398,7 +409,7 @@
     </div>  
     <div class="row">
         <div class="col-12">  
-            <table style="font-size:7px;" width="100%" >
+            <table style="font-size:11px;" width="100%" >
                     <% } %>
                     
                     <% } %>
@@ -415,18 +426,22 @@
             </div>
         </div> 
     </div> 
-    <div style="page-break-after:always;margin:20px;font-size:7px;">
-    <table width="100%" >
-        <tr>
-            <td style="width: 50%;">รายละเอียดการใช้บริการ คุณ<%= rows.cust_name %></td>
-            <td style="width: 40%;">รายละเอียดการใช้บริการ คุณ<%= rows.cust_name %></td>
-            <td style="width: 10%;text-align: right;"><%= chkpage %>/<%= lastPage %></td>
-        </tr>
-    </table>
+    <div style="page-break-before:always;margin:20px;font-size:11px;">
+    <div class="row">
+        <div class="col-6">
+            รายละเอียดการใช้บริการ คุณ<%= rows.cust_name %>
+        </div>
+        <div class="col-5">
+            รายละเอียดการใช้บริการ คุณ<%= rows.cust_name %>
+        </div>
+        <div class="col-1" style="text-align:right">
+            <%= chkpage %> /<%= lastPage %>
+        </div>
+    </div>
     <div class="row">
         <div class="col-12">
             
-            <table class="table table-bordered border-dark" style="font-size:7px;" width="100%" >
+            <table class="table table-bordered border-dark" style="font-size:11px;" width="100%" >
                 <thead>
                     <tr>
                         <td class="text-center" style="width: 25%;">หมายเลข</td>
@@ -441,7 +456,7 @@
     </div>  
     <div class="row">
         <div class="col-12">  
-            <table style="font-size:7px;" width="100%" >
+            <table style="font-size:11px;" width="100%" >
                     <% } %>
             </table>
                 <% } %>
