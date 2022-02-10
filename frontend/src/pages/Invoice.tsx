@@ -14,8 +14,11 @@ export default (): React.ReactNode => {
     <PageContainer>
       <Card>
         <Tabs defaultActiveKey="1">
-          <TabPane tab="Export" key="1">
+          <TabPane tab="Export Data" key="1">
           <InvoiceTable />
+          </TabPane>
+          <TabPane tab="Manage Data" key="2">
+            bbb
           </TabPane>
         </Tabs>
       </Card>
