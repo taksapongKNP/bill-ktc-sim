@@ -1,5 +1,5 @@
 const { Sequelize } = require("sequelize");
-const { dbDev } = require("../config/index");
+const { Local,dbDev } = require("../config/index");
 
 console.log(`this host is : ${dbDev.HOST}`)
 

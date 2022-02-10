@@ -1,6 +1,6 @@
 import { Table, Row,Col,  Input, DatePicker,Button ,Space ,Spin} from 'antd';
 import React, { useState, useEffect, useRef } from 'react';
-import { getdataInvoiceByDate,exportZipByDate} from '@/services/backend/api';
+import { getdataInvoiceByDate,exportZipInvoiceByDate} from '@/services/backend/api';
 
 import { SearchOutlined, FilePdfOutlined, DownloadOutlined ,FileZipOutlined } from '@ant-design/icons';
 import { replace } from 'lodash';
@@ -150,7 +150,7 @@ export const InvoiceTable: React.FC<any> = () => {
       endDate:endDate.replaceAll('/','|')
     };
     var data = JSON.stringify(dateJson);
-    await exportZipByDate(data).then(function (value){
+    await exportZipInvoiceByDate(data).then(function (value){
       
       var pathJson = {
         path: value
