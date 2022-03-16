@@ -15,6 +15,17 @@ module.exports = {
         });
     });
   },
+  multiCreate: (billing) => {
+    return new Promise((resolve, reject) => {
+      Billing.bulkCreate(billing)
+        .then((data) => {
+          resolve(data);
+        })
+        .catch((err) => {
+          resolve(err);
+        });
+    });
+  },
   findAll: () => {
     return new Promise((resolve, reject) => {
         Billing.findAll()
@@ -94,6 +105,27 @@ module.exports = {
         });
     });
   },
+  deleteByLogNumber: (log_number) => {
+    return new Promise((resolve, reject) => {
+        Billing.destroy({
+        where: { log_number: log_number },
+      })
+        .then((num) => {
+          if (num == 1) {
+            resolve({
+              message: "Teams was deleted successfully!",
+            });
+          } else {
+            resolve({
+              message: `Cannot delete Teams with log_number=${log_number}. Maybe Teams was not found!`,
+            });
+          }
+        })
+        .catch((err) => {
+          resolve(err);
+        });
+    });
+  },
   findStatementByInvoiceNo: (invoiceNo) => {
     // console.log(surveycode)
     return new Promise((resolve, reject) => {
@@ -101,24 +133,10 @@ module.exports = {
       resolve(dataList);
     });
   },
-  findStatementByBillCycleStart: (startDate,endDate) => {
+  findStatementByIssueDate: (startDate,endDate) => {
     console.log(startDate+" - "+endDate)
     return new Promise((resolve, reject) => {
-      const dataList =  db.sequelize.query(`SELECT * FROM db_billing  WHERE STR_TO_DATE(bill_cycle_start,'%d/%m/%Y')  BETWEEN STR_TO_DATE('${startDate}','%d/%m/%Y') AND STR_TO_DATE('${endDate}','%d/%m/%Y')  `, { type: QueryTypes.SELECT });
-      resolve(dataList);
-    });
-  },
-  findInvoiceByInvoiceNo: (invoiceNo) => {
-    // console.log(surveycode)
-    return new Promise((resolve, reject) => {
-      const dataList =  db.sequelize.query(`SELECT * FROM db_invoice WHERE invoice_no = '${invoiceNo}' `, { type: QueryTypes.SELECT });
-      resolve(dataList);
-    });
-  },
-  findInvoiceByBillCycleStart: (startDate,endDate) => {
-    console.log(startDate+" - "+endDate)
-    return new Promise((resolve, reject) => {
-      const dataList =  db.sequelize.query(`SELECT * FROM db_invoice  WHERE STR_TO_DATE(bill_cycle_start,'%d/%m/%Y')  BETWEEN STR_TO_DATE('${startDate}','%d/%m/%Y') AND STR_TO_DATE('${endDate}','%d/%m/%Y')  `, { type: QueryTypes.SELECT });
+      const dataList =  db.sequelize.query(`SELECT * FROM db_billing  WHERE STR_TO_DATE(issue_date,'%d/%m/%Y')  BETWEEN STR_TO_DATE('${startDate}','%d/%m/%Y') AND STR_TO_DATE('${endDate}','%d/%m/%Y')  `, { type: QueryTypes.SELECT });
       resolve(dataList);
     });
   }

@@ -1,5 +1,5 @@
 const { Sequelize } = require("sequelize");
-const { Local,dbDev } = require("../config/index");
+const { Local,LocalTest,dbDev } = require("../config/index");
 
 console.log(`this host is : ${dbDev.HOST}`)
 
@@ -53,8 +53,11 @@ db.teamsMap = require("./models.teamsMap")(sequelize, Sequelize);
 db.billing = require("./models.billing")(sequelize, Sequelize);
 db.serviceCharge = require("./models.serviceCharge")(sequelize, Sequelize);
 db.billingSub = require("./models.billingSub")(sequelize, Sequelize);
+db.invoice = require("./models.invoice")(sequelize, Sequelize);
+db.uploadLog = require("./models.uploadLog")(sequelize, Sequelize);
 
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
+
 
 module.exports = db;

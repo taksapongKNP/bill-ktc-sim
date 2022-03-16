@@ -52,4 +52,6 @@ export default {
   'menu.editor.mind': 'Mind Editor',
   'menu.editor.koni': 'Koni Editor',
   'menu.Billing': 'Billing',
+  'menu.Statement' : 'Statement',
+  'menu.Invoice' : 'Invoice',
 };

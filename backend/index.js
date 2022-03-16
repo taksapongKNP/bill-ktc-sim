@@ -2,15 +2,26 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
 const cors = require("cors");
+const fileUpload = require('express-fileupload');
 const server = express();
+
+
 server.use(bodyParser.json());
 server.use(morgan("dev"));
 server.use(cors());
+server.use(fileUpload({
+  createParentPath: true
+}));
+
 server.use( express.static( "public" ) );
 const port = 3000;
 const Excel = require("exceljs");
 const fs = require("fs");
+
 server.use("/font", express.static(__dirname +'/templates/fonts/'));
+server.use("/files", express.static(__dirname +'/files'));
+server.use("/download-files", express.static(__dirname +'/download-files'));
+
 server.use("/templates/images", express.static(__dirname +'/templates/image/'));
 server.use("/api/users", require("./routes/rounter.users.js"));
 server.use("/api/survey", require("./routes/rounter.survey.js"));

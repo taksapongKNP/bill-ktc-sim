@@ -3,7 +3,8 @@ import { PageContainer } from '@ant-design/pro-layout';
 import { Card, Alert,Row, Typography, Tabs } from 'antd';
 import { useIntl, FormattedMessage } from 'umi';
 
-import { InvoiceTable } from './invoice-Table';
+import { InvoiceTable } from './invoice/invoiceTable';
+import { InvoiceManage } from './invoice/invoiceManage';
 
 const { TabPane } = Tabs;
 
@@ -18,7 +19,7 @@ export default (): React.ReactNode => {
           <InvoiceTable />
           </TabPane>
           <TabPane tab="Manage Data" key="2">
-            bbb
+          <InvoiceManage />
           </TabPane>
         </Tabs>
       </Card>

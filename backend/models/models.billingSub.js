@@ -17,6 +17,10 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING,
         allowNull: true,
       },
+      call_time: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
       destination_number: {
         type: Sequelize.STRING,
         allowNull: true,
@@ -49,6 +53,10 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING,
         allowNull: true,
       },
+      log_number: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
       created_at: {
         type: Sequelize.STRING,
         allowNull: true,
@@ -57,6 +65,7 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING,
         allowNull: true,
       },
+      
      
     })
   

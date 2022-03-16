@@ -30,5 +30,19 @@ module.exports = {
       idle: 10000,
     },
     PORT: 3306,
-  }
+  },
+  LocalTest: {
+    HOST: "localhost",
+    USER: "osdadmin",
+    PASSWORD: "osdadmin",
+    DB: "bill_sim_ktc",
+    dialect: "mysql",
+    pool: {
+      max: 5,
+      min: 0,
+      acquire: 30000,
+      idle: 10000,
+    },
+    PORT: 3306,
+  },
 };

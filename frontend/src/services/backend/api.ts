@@ -15,26 +15,6 @@ export async function currentUser(options?: { [key: string]: any }) {
   });
 }
 
-export async function getProductAll(options?: { [key: string]: any }) {
-  const token = localStorage.getItem('token');
-  return request<any>(`${urlBackend}/api/products`, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    ...(options || {}),
-  });
-}
-
-export async function getProductByProCode(id: string) {
-  const token = localStorage.getItem('token');
-  return request<any>(`${urlBackend}/api/products/procode/${id}`, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-}
 
 export async function outLogin(options?: { [key: string]: any }) {
   return request<Record<string, any>>('/api/login/outLogin', {
@@ -101,81 +81,12 @@ export async function removeRule(options?: { [key: string]: any }) {
   });
 }
 
-export async function getProducts() {
-  const token = localStorage.getItem('token');
-  return request<any>(`${urlBackend}/api/products`, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-}
-
-export async function getProductById(id: string) {
-  const token = localStorage.getItem('token');
-  return request<any>(`${urlBackend}/api/products/${id}`, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-}
-
-export async function updateProductById(data: any) {
-  const token = localStorage.getItem('token');
-  return request<any>(`${urlBackend}/api/products/${data.product_code}`, {
-    method: 'PUT',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    data: data,
-  });
-}
-
-export async function addProduct(data: any) {
-  const token = localStorage.getItem('token');
-  return request<any>(`${urlBackend}/api/products`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    data: data,
-  });
-}
-
-export async function deleteProduct(data: any) {
-  const token = localStorage.getItem('token');
-  return request<any>(`${urlBackend}/api/products`, {
-    method: 'DELETE',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    data: data,
-  });
-}
-
 // export async function removeRule(options?: { [key: string]: any }) {
 //   return request<Record<string, any>>('/api/rule', {
 //     method: 'DELETE',
 //     ...(options || {}),
 //   });
 // }
-
-export async function getDataexport(data: { [key: string]: any }) {
-  return request<any>(`${urlBackend}/api/export/create/${data}`, {
-    method: 'POST',
-    data: data,
-    ...(data || {}),
-  });
-}
-
-export async function downloadExcel(data: any) {
-  return request<any>(`${urlBackend}/api/download/excel/${data}`, {
-    method: 'GET',
-    data: data,
-    ...(data || {}),
-  });
-}
 
 export async function getPositionsAll(options?: { [key: string]: any }) {
   const token = localStorage.getItem('token');
@@ -187,125 +98,6 @@ export async function getPositionsAll(options?: { [key: string]: any }) {
     ...(options || {}),
   });
 }
-
-export async function getFileallsurvay (id: string){
-  const token = localStorage.getItem('token');
-  return request<any>(`${urlBackend}/api/survey`, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  })
-}
-
-export async function getFillAllUser (){
-  const token = localStorage.getItem('token');
-  return request<any>(`${urlBackend}/api/survey/Username`, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  })
-}
-
-export async function getimportFileProduct(data: any) {
-  const token = localStorage.getItem('token');
-  return request<any>(`${urlBackend}/api/products/importProduct`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    data: data,
-  });
-}
-
-export async function imageInsert(data: any) {
-  const token = localStorage.getItem('token');
-  return request<any>(`${urlBackend}/api/surveyImages`, {
-    method: 'POST',
-    data: data,
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    ...(data || {}),
-  });
-}
-
-
-export async function imageInsertmultirows(data: any) {
-  const token = localStorage.getItem('token');
-  return request<any>(`${urlBackend}/api/surveyImages/multirows`, {
-    method: 'POST',
-    data: data,
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    ...(data || {}),
-  });
-}
-
-export async function getdataDetaillist (id: any){
-  const token = localStorage.getItem('token');
-  return request<any>(`${urlBackend}/api/surveyDetails/${id}`, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  })
-}
-
-export async function getdataDetail (id: any){
-  const token = localStorage.getItem('token');
-  return request<any>(`${urlBackend}/api/survey/${id}`, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  })
-}
-
-export async function getImagedetail(id: any) {
-  const token = localStorage.getItem('token');
-  return request<any>(`${urlBackend}/api/surveyImages/${id}`, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-}
-
-export async function updateDatasurvey(data: any) {
-  const token = localStorage.getItem('token');
-  return request<any>(`${urlBackend}/api/survey/${data.detailsurvey_code}`, {
-    method: 'PUT',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    data: data,
-  });
-}
-
-export async function productDatatale(id: any) {
-  const token = localStorage.getItem('token');
-  return request<any>(`${urlBackend}/api/products/joinproduct/${id}`, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-}
-
-export async function updateDetailsurvey(data: any) {
-  const token = localStorage.getItem('token');
-  return request<any>(`${urlBackend}/api/surveyDetails/${data.survey_code}`, {
-    method: 'PUT',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    data: data,
-  });
-}
-
 
 //Statement
 export async function getdataBilling (){
@@ -365,4 +157,36 @@ export async function exportZipInvoiceByDate (data: any){
     data: data,
     ...(data || {}),
   })
+}
+
+export async function readExcelFile (data: any){
+  return request<any>(`${urlBackend}/api/billing/invoice/readExcelFile`, {
+    method: 'POST',
+    data: data,
+    ...(data || {}),
+  })
+}
+
+//Upload Log 
+export async function getUploadLog (data:any){
+  const token = localStorage.getItem('token');
+  return request<any>(`${urlBackend}/api/billing/uploadLog/get/${data}`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+}
+
+export async function deleteDataFormLog(data:any) {
+  const token = localStorage.getItem('token');
+  return request<any>(`${urlBackend}/api/billing/uploadLog/delete`, {
+    method: 'PUT',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    data: data,
+    ...(data || {}),
+    
+  });
 }

@@ -13,7 +13,7 @@ const Settings: LayoutSettings & {
   colorWeak: false,
   title: 'D-BILLING',
   pwa: false,
-  logo: 'icons/OSD-simbol-icon.png',
+  logo: 'http://localhost:8000/icons/OSD-simbol-icon.png',
   iconfontUrl: 'icons/OSD-simbol-icon.png',
 };
 

@@ -33,7 +33,7 @@
     name: 'Statement',
     icon: 'fileText',
     path: '/billing/statement',
-    component: './Billing',
+    component: './Statement',
   },
   {
     name: 'Invoice',

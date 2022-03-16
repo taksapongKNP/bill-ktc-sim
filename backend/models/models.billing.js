@@ -25,11 +25,15 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING,
         allowNull: true,
       },
-      issue_date: {
-        type: Sequelize.DATE,
+      issue_STRING: {
+        type: Sequelize.STRING,
         allowNull: true,
       },
       tax_id: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      issue_date: {
         type: Sequelize.STRING,
         allowNull: true,
       },
@@ -38,11 +42,11 @@ module.exports = (sequelize, Sequelize) => {
         allowNull: true,
       },
       bill_cycle_start: {
-        type: Sequelize.BOOLEAN,
+        type: Sequelize.STRING,
         allowNull: true,
       },
       expresstion: {
-        type: Sequelize.BOOLEAN,
+        type: Sequelize.STRING,
         allowNull: true,
       },
       bill_cycle_end: {
@@ -50,15 +54,15 @@ module.exports = (sequelize, Sequelize) => {
         allowNull: true,
       },
       over_fee: {
-        type: Sequelize.BOOLEAN,
+        type: Sequelize.STRING,
         allowNull: true,
       },
       special_number_fee: {
-        type: Sequelize.BOOLEAN,
+        type: Sequelize.STRING,
         allowNull: true,
       },
       supple_promotion: {
-        type: Sequelize.DATE,
+        type: Sequelize.STRING,
         allowNull: true,
       },
       sms: {
@@ -66,63 +70,67 @@ module.exports = (sequelize, Sequelize) => {
         allowNull: true,
       },
       mms: {
-        type: Sequelize.BOOLEAN,
+        type: Sequelize.STRING,
         allowNull: true,
       },
       oversea: {
-        type: Sequelize.BOOLEAN,
+        type: Sequelize.STRING,
         allowNull: true,
       },
       roaming: {
-        type: Sequelize.DATE,
+        type: Sequelize.STRING,
         allowNull: true,
       },
       other: {
-        type: Sequelize.DATE,
+        type: Sequelize.STRING,
         allowNull: true,
       },
       sum_over_package: {
-        type: Sequelize.DATE,
+        type: Sequelize.STRING,
         allowNull: true,
       },
       out_bal: {
-        type: Sequelize.DATE,
+        type: Sequelize.STRING,
         allowNull: true,
       },
       hide_digit: {
-        type: Sequelize.DATE,
+        type: Sequelize.STRING,
         allowNull: true,
       },
       current_charge: {
-        type: Sequelize.DATE,
+        type: Sequelize.STRING,
         allowNull: true,
       },
       total_out_bal: {
-        type: Sequelize.DATE,
+        type: Sequelize.STRING,
         allowNull: true,
       },
       vat: {
-        type: Sequelize.DATE,
+        type: Sequelize.STRING,
         allowNull: true,
       },
       amount: {
-        type: Sequelize.DATE,
+        type: Sequelize.STRING,
         allowNull: true,
       },
-      current_due_date: {
-        type: Sequelize.DATE,
+      current_due_STRING: {
+        type: Sequelize.STRING,
         allowNull: true,
       },
       account_number: {
-        type: Sequelize.DATE,
+        type: Sequelize.STRING,
         allowNull: true,
       },
-      cut_date: {
-        type: Sequelize.DATE,
+      cut_STRING: {
+        type: Sequelize.STRING,
         allowNull: true,
       },
       hide_digit: {
-        type: Sequelize.DATE,
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      log_number: {
+        type: Sequelize.STRING,
         allowNull: true,
       }
     
