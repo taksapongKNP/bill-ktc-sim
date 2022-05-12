@@ -55,6 +55,7 @@ db.serviceCharge = require("./models.serviceCharge")(sequelize, Sequelize);
 db.billingSub = require("./models.billingSub")(sequelize, Sequelize);
 db.invoice = require("./models.invoice")(sequelize, Sequelize);
 db.uploadLog = require("./models.uploadLog")(sequelize, Sequelize);
+db.zipLog = require("./models.zipLog")(sequelize, Sequelize);
 
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;

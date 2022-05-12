@@ -15,10 +15,10 @@ export default (): React.ReactNode => {
     <PageContainer>
       <Card>
         <Tabs defaultActiveKey="1">
-          <TabPane tab="Export Data" key="1">
+          <TabPane tab="Detail" key="1">
           <InvoiceTable />
           </TabPane>
-          <TabPane tab="Manage Data" key="2">
+          <TabPane tab="Import" key="2">
           <InvoiceManage />
           </TabPane>
         </Tabs>

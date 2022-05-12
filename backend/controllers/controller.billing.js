@@ -18,7 +18,9 @@ const ejs = require("ejs");
 const { ConsoleMessage } = require("puppeteer");
 const zipFolder = require("zip-folder");
 const rimraf = require("rimraf");
-const schedule = require('node-schedule');
+const QRCode = require('qrcode');
+
+
 
 server.use("/files", express.static(__dirname +'/files'));
 
@@ -57,6 +59,8 @@ exports.exportStatement = async (req, res) => {
   const endDate = json.endDate.replaceAll("|", "/");
   const id = json.id;
 
+  
+
   const dataList = await billingService
     .findStatementByInvoiceNo(id)
     .then((data) => {
@@ -71,6 +75,11 @@ exports.exportStatement = async (req, res) => {
   for (var i = 0; i < dataList.length; i++) {
     var phone = dataList[i].cust_mobile.toString().trim();
     var invoice = dataList[i].invoice_no.toString().trim();
+    var accountNo = dataList[i].account_no.toString().trim().replace(/[^0-9]/g,'');
+    var totalOutBalStr = Number(dataList[i].total_out_bal.toString().trim()).toFixed(2).replace(/[^0-9]/g,'');
+    var scanTxtCode = '|010554612702201\\n'+accountNo+'\\n'+invoice.replace(/[^0-9]/g,'')+'\\n'+totalOutBalStr;
+    var scanTxtCodeShow = '|010554612702201 '+accountNo+' '+invoice.replace(/[^0-9]/g,'')+' '+totalOutBalStr;
+    var totalOutBalTxt = bahttext.bahttext(Number(dataList[i].total_out_bal.toString().trim()));
     var detailList = await billingSubService
       .fileByDateAndPhone(invoice)
       .then((data) => {
@@ -83,17 +92,21 @@ exports.exportStatement = async (req, res) => {
         return data;
       });
     html += await ejs.renderFile(
-      "./templates/pdfTemplateByDate.html.ejs",
+      "./templates/pdfTemplateStatementScan.html.ejs",
       {
         rows: dataList[i],
         detail: detailList,
         group: groupList,
+        totalOutBalTxt:totalOutBalTxt,
+        scanTxtCode:scanTxtCode,
+        scanTxtCodeShow:scanTxtCodeShow,
+        chkNum:i
       },
       { async: true }
     );
   }
-  let options = { format: "A4" };
-  let file = { content: html };
+  var options = { format: "A4" };
+  var file = { content: html };
 
   pdf.create(html, options).toStream(
     (err, stream) => {
@@ -105,12 +118,14 @@ exports.exportStatement = async (req, res) => {
       stream.pipe(res)
     }
   )
+  
+  // res.status(200).send('done');
 };
 
 
 
 exports.pdfStatementByDate = async (req, res) => {
-
+  const uid = uuidv4();
   const json = JSON.parse(req.params.data);
   // console.log(json.startDate.replaceAll('|','/'));
   const startDate = json.startDate.replaceAll('|','/');
@@ -133,6 +148,12 @@ exports.pdfStatementByDate = async (req, res) => {
 
     var phone = dataList[i].cust_mobile.toString().trim();
     var invoice = dataList[i].invoice_no.toString().trim();
+    var accountNo = dataList[i].account_no.toString().trim().replace(/[^0-9]/g,'');
+    var totalOutBalStr = Number(dataList[i].total_out_bal.toString().trim()).toFixed(2).replace(/[^0-9]/g,'');
+    var scanTxtCode = '|010554612702201\\n'+accountNo+'\\n'+invoice.replace(/[^0-9]/g,'')+'\\n'+totalOutBalStr;
+    var scanTxtCodeShow = '|010554612702201 '+accountNo+' '+invoice.replace(/[^0-9]/g,'')+' '+totalOutBalStr;
+    var totalOutBalTxt = bahttext.bahttext(Number(dataList[i].total_out_bal.toString().trim()));
+    
     var detailList = await billingSubService.fileByDateAndPhone(invoice)
     .then((data) => {
       return data;
@@ -146,26 +167,34 @@ exports.pdfStatementByDate = async (req, res) => {
     console.log(phone);
     console.log(groupList);
     html += await ejs.renderFile(
-      "./templates/pdfTemplateByDate.html.ejs",
+      "./templates/pdfTemplateStatementScan.html.ejs",
       {
         rows: dataList[i],
         detail : detailList,
-        group : groupList
+        group : groupList,
+        totalOutBalTxt:totalOutBalTxt,
+        scanTxtCode:scanTxtCode,
+        scanTxtCodeShow:scanTxtCodeShow,
+        chkNum:i
       },
       {async :true},"utf8"
     );
   }
 
-  let options = {format: "A4"};
-  let  file = {content: html};
+  var options = {format: "A4",timeout: '600000'};
+  var  file = {content: html};
   pdf.create(html, options).toStream(
     (err, stream) => {
-      // res.setHeader('Content-Type', 'application/pdf')
+      if(err){ 
+      console.log("🚀 ~ file: controller.billing.js ~ line 164 ~ exports.pdfStatementByDate= ~ err", err)
+      }else{
       res.set({
             "Content-Type": "application/pdf; charset=utf-8;",
-            "Content-Disposition": "attachment;filename=Statement_"+startDate+"-"+endDate+".pdf"
+            "Content-Disposition": "attachment;filename=Statement_"+uid+".pdf"
           })
       stream.pipe(res)
+      }
+     
     }
   )
 
@@ -197,6 +226,13 @@ exports.zipStatementByDate = async (req, res) => {
   for (var i = 0; i < dataList.length; i++) {
     var phone = dataList[i].cust_mobile.toString().trim();
     invoiceNo[i] = dataList[i].invoice_no.toString().trim();
+    var accountNo = dataList[i].account_no.toString().trim().replace(/[^0-9]/g,'');
+    var totalOutBalStr = Number(dataList[i].total_out_bal.toString().trim()).toFixed(2).replace(/[^0-9]/g,'');
+    var scanTxtCode = '|010554612702201\\n'+accountNo+'\\n'+invoiceNo[i].replace(/[^0-9]/g,'')+'\\n'+totalOutBalStr;
+    var scanTxtCodeShow = '|010554612702201 '+accountNo+' '+invoiceNo[i].replace(/[^0-9]/g,'')+' '+totalOutBalStr;
+    var totalOutBalTxt = bahttext.bahttext(Number(dataList[i].total_out_bal.toString().trim()));
+    var totalOutBalTxt = bahttext.bahttext(Number(dataList[i].total_out_bal.toString().trim()));
+    var issue_date = dataList[i].issue_date.toString().trim().replaceAll('/', '');
     var detailList = await billingSubService
       .fileByDateAndPhone(invoiceNo[i])
       .then((data) => {
@@ -209,20 +245,23 @@ exports.zipStatementByDate = async (req, res) => {
         return data;
       });
 
-    console.log(phone);
     var html = await ejs.renderFile(
-      "./templates/pdfTemplateByDate.html.ejs",
+      "./templates/pdfTemplateStatementScan.html.ejs",
       {
         rows: dataList[i],
         detail: detailList,
         group: groupList,
+        totalOutBalTxt:totalOutBalTxt,
+        scanTxtCode:scanTxtCode,
+        scanTxtCodeShow:scanTxtCodeShow,
+        chkNum:i
       },
       { async: true }
     );
 
-    let options = { format: "A4" };
-    let file = { content: html };
-    filename = "./files/zipStatement_"+uid+"/"+"Statement" + invoiceNo[i] +".pdf";
+    var options = { format: "A4" };
+    var file = { content: html };
+    filename = "./files/zipStatement/"+issue_date+"/"+"Statement" + invoiceNo[i] +".pdf";
   
     // await genPDF(html, options,filename) ;
     pdf.create(html, options).toFile(filename,(err, res)=>{
@@ -284,51 +323,52 @@ exports.downloadStatementFileByPath = async (req, res) => {
 exports.readStatementExcelFile = async (req, res) => {
   const logNumber = uuidv4();
 
-  let today = new Date();
+  var today = new Date();
   const dd = String(today.getDate()).padStart(2, '0');
   const mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
   const yyyy = today.getFullYear();
   today = mm + '/' + dd + '/' +yyyy + ' '+today.getHours()+':'+today.getMinutes()+':'+today.getSeconds();
   console.log(today);
-  let file = req.files.excelfile
+  var file = req.files.excelfile
   const fileName = file.name;
 
-  let wb= xlsx.read(file.data, {type: "buffer"});
+  var wb= xlsx.read(file.data, {type: "buffer"});
   const ws1 = wb.Sheets[wb.SheetNames[0]];
   const excelRows = xlsx.utils.sheet_to_json(ws1).length;
   console.log(excelRows);
   if(excelRows >= 1 ){
-  let cust_name =null;
-  let cust_add =null;
-  let cust_id =null;
-  let account_no =null;
-  let invoice_no =null;
-  let issue_date =null;
-  let tax_id =null;
-  let cust_mobile =null;
-  let bill_cycle_start =null;
-  let expresstion =null;
-  let bill_cycle_end =null;
-  let over_fee =null;
-  let special_number_fee =null;
-  let supple_promotion =null;
-  let sms =null;
-  let mms =null;
-  let oversea =null;
-  let roaming =null;
-  let other =null;
-  let sum_over_package =null;
-  let out_bal =null;
-  let total_out_bal =null;
-  let vat =null;
-  let amount =null;
-  let current_due_date = null;
-  let account_number =null;
-  let cut_date =null;
-  let hide_digit =null;
+  var cust_name =null;
+  var cust_add =null;
+  var cust_id =null;
+  var account_no =null;
+  var invoice_no =null;
+  var issue_date =null;
+  var tax_id =null;
+  var cust_mobile =null;
+  var bill_cycle_start =null;
+  var expresstion =null;
+  var bill_cycle_end =null;
+  var over_fee =null;
+  var special_number_fee =null;
+  var supple_promotion =null;
+  var sms =null;
+  var mms =null;
+  var oversea =null;
+  var roaming =null;
+  var other =null;
+  var sum_over_package =null;
+  var out_bal =null;
+  var total_out_bal =null;
+  var paid_amount =null;
+  var vat =null;
+  var amount =null;
+  var current_due_date = null;
+  var account_number =null;
+  var cut_date =null;
+  var hide_digit =null;
 
-  let insertData =[];
-  for (let i = 2; i <= excelRows+1; i++) {
+  var insertData =[];
+  for (var i = 2; i <= excelRows+1; i++) {
     if(ws1['A'+i] != null )
     cust_name   = ws1['A'+i].w.toString().trim() ;
     else
@@ -403,25 +443,28 @@ exports.readStatementExcelFile = async (req, res) => {
     total_out_bal =ws1['V'+i].v.toString().trim() ;
     else total_out_bal = '0';
     if(ws1['W'+i] != null )
-    vat =ws1['W'+i].v.toString().trim() ;
+    paid_amount =ws1['W'+i].v.toString().trim() ;
     else vat = '0';
     if(ws1['X'+i] != null )
-    amount =ws1['X'+i].v.toString().trim() ;
-    else amount= '0';
+    vat =ws1['X'+i].v.toString().trim() ;
+    else vat = '0';
     if(ws1['Y'+i] != null )
-    current_due_date =ws1['Y'+i].w.toString().trim() ;
-    else current_due_date= '';
+    amount =ws1['Y'+i].v.toString().trim() ;
+    else amount= '0';
     if(ws1['Z'+i] != null )
-    account_number =ws1['Z'+i].w.toString().trim() ;
-    else account_number= '';
+    current_due_date =ws1['Z'+i].w.toString().trim() ;
+    else current_due_date= '';
     if(ws1['AA'+i] != null )
-    cut_date =ws1['AA'+i].w.toString().trim() ;
-    else cut_date= '';
+    account_number =ws1['AA'+i].w.toString().trim() ;
+    else account_number= '';
     if(ws1['AB'+i] != null )
-    hide_digit =ws1['AB'+i].w.toString().trim() ;
+    cut_date =ws1['AB'+i].w.toString().trim() ;
+    else cut_date= '';
+    if(ws1['AC'+i] != null )
+    hide_digit =ws1['AC'+i].w.toString().trim() ;
     else hide_digit= '';
 
-    let dataList = {
+    var dataList = {
       cust_name :cust_name,
       cust_add :cust_add,
       cust_id :cust_id,
@@ -444,14 +487,16 @@ exports.readStatementExcelFile = async (req, res) => {
       sum_over_package : sum_over_package,
       out_bal : out_bal,
       total_out_bal : total_out_bal,
+      paid_amount : paid_amount,
       vat : vat,
       amount : amount,
       current_due_date : current_due_date,
       account_number : account_number,
       cut_date : cut_date,
-      hide_digit : hide_digit
+      hide_digit : hide_digit,
+      log_number:logNumber
     }
-    // console.log(bill_cycle_start)
+    console.log(dataList)
     insertData.push(dataList);
   
   }
@@ -465,21 +510,21 @@ exports.readStatementExcelFile = async (req, res) => {
 
   const ws2 = wb.Sheets[wb.SheetNames[1]];
   const excelRows2 = xlsx.utils.sheet_to_json(ws2).length;
-  let sub_invoice_no = null;
-  let sub_origin_number =null;
-  let sub_call_date =null;
-  let sub_call_time = null;
-  let sub_destination_number =null;
-  let sub_util =null;
-  let sub_service_charge_id =null;
-  let sub_service_charge_name =null;
-  let sub_service_charge_amt =null;
-  let sub_sum_over_package =null;
-  let sub_out_bal =null;
-  let sub_total_out_bal = null;
+  var sub_invoice_no = null;
+  var sub_origin_number =null;
+  var sub_call_date =null;
+  var sub_call_time = null;
+  var sub_destination_number =null;
+  var sub_util =null;
+  var sub_service_charge_id =null;
+  var sub_service_charge_name =null;
+  var sub_service_charge_amt =null;
+  var sub_sum_over_package =null;
+  var sub_out_bal =null;
+  var sub_total_out_bal = null;
 
-  let insertData2 =[];
-  for (let i = 2; i <= 100; i++) {
+  var insertData2 =[];
+  for (var i = 2; i <= excelRows2+1; i++) {
     if(ws2['A'+i] != null )
     sub_invoice_no   = ws2['A'+i].w.toString().trim() ;
     else
@@ -529,7 +574,7 @@ exports.readStatementExcelFile = async (req, res) => {
     else
     sub_total_out_bal = '';
 
-    let dataList2 = {
+    var dataList2 = {
       invoice_no  : sub_invoice_no ,
       origin_number : sub_origin_number,
       call_date : sub_call_date,
@@ -543,11 +588,11 @@ exports.readStatementExcelFile = async (req, res) => {
       out_bal : sub_out_bal,
       total_out_bal  : sub_total_out_bal 
     }
-    console.log(sub_call_time)
+    // console.log(sub_call_time)
     insertData2.push(dataList2);
 
   }
-  // console.log(`this data insert : ${insertData2}`)
+  console.log(`this data insert : ${insertData2}`)
   billingSubService.multiCreate(insertData2)
       .catch((err) => {
         console.log(err);
@@ -556,7 +601,7 @@ exports.readStatementExcelFile = async (req, res) => {
   
   
   
-  let dataLog = {
+  var dataLog = {
     file_name :fileName,
     upload_date :today,
     log_number :logNumber,
@@ -605,12 +650,12 @@ exports.exportInvoice = async (req, res) => {
   const endDate = json.endDate.replaceAll("|", "/");
   const id = json.id;
 
-  let date_ob = new Date();
-  let date = ("0" + date_ob.getDate()).slice(-2);
-  let month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
-  let year = date_ob.getFullYear();
+  var date_ob = new Date();
+  var date = ("0" + date_ob.getDate()).slice(-2);
+  var month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
+  var year = date_ob.getFullYear();
   
-  let nowDate = date+"/"+month+"/"+(year);
+  var nowDate = date+"/"+month+"/"+(year);
   const dataList = await invoiceService.findInvoiceByInvoiceNo(id)
   .then((data) => {
     return data;
@@ -639,8 +684,8 @@ console.log(dataList)
     );
   }
 
-  let options = {format: "A4"};
-  let  file = {content: html};
+  var options = {format: "A4"};
+  var  file = {content: html};
   pdf.create(html, options).toStream(
     (err, stream) => {
       // res.setHeader('Content-Type', 'application/pdf')
@@ -655,21 +700,21 @@ console.log(dataList)
 
 exports.pdfInvoiceByDate = async (req, res) => {
   // const nowDate = Date.now();
-  let date_ob = new Date();
-  let date = ("0" + date_ob.getDate()).slice(-2);
-  let month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
-  let year = date_ob.getFullYear();
+  var date_ob = new Date();
+  var date = ("0" + date_ob.getDate()).slice(-2);
+  var month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
+  var year = date_ob.getFullYear();
   
-  let nowDate = date+"/"+month+"/"+(year);
+  var nowDate = date+"/"+month+"/"+(year);
   const json = JSON.parse(req.params.data);
   // console.log(json.startDate.replaceAll('|','/'));
   const startDate = json.startDate.replaceAll('|','/');
   const endDate = json.endDate.replaceAll('|','/');
   console.log('export to PDF form : '+startDate+' '+endDate);
 
-  let bathText = '';
-  let feeAmt =0;
-  let allAmt =0;
+  var bathText = '';
+  var feeAmt =0;
+  var allAmt =0;
   const dataList = await invoiceService.findInvoiceByIssueDate(startDate, endDate)
   .then((data) => {
     return data;
@@ -699,8 +744,8 @@ console.log(dataList)
     );
   }
 
-  let options = {format: "A4"};
-  let  file = {content: html};
+  var options = {format: "A4"};
+  var  file = {content: html};
   pdf.create(html, options).toStream(
     (err, stream) => {
       // res.setHeader('Content-Type', 'application/pdf')
@@ -717,24 +762,24 @@ console.log(dataList)
   const uid = uuidv4();
   const filepath = "./files/zipInvoice_" + uid + ".zip";
   // const nowDate = Date.now();
-  let date_ob = new Date();
-  let date = ("0" + date_ob.getDate()).slice(-2);
-  let month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
-  let year = date_ob.getFullYear();
+  var date_ob = new Date();
+  var date = ("0" + date_ob.getDate()).slice(-2);
+  var month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
+  var year = date_ob.getFullYear();
   
-  let filename = [];
-  let invoiceNo = [];
+  var filename = [];
+  var invoiceNo = [];
 
-  let nowDate = date+"/"+month+"/"+(year);
+  var nowDate = date+"/"+month+"/"+(year);
   const json = JSON.parse(req.params.data);
   // console.log(json.startDate.replaceAll('|','/'));
   const startDate = json.startDate.replaceAll('|','/');
   const endDate = json.endDate.replaceAll('|','/');
   console.log('export to PDF form : '+startDate+' '+endDate);
 
-  let bathText = '';
-  let feeAmt =0;
-  let allAmt =0;
+  var bathText = '';
+  var feeAmt =0;
+  var allAmt =0;
   const dataList = await invoiceService.findInvoiceByIssueDate(startDate, endDate)
   .then((data) => {
     return data;
@@ -745,8 +790,8 @@ console.log(dataList)
     res.status(500).send(err);
   });
   var html=""
-  let totalProcess = 0;
-  let lenProcess = dataList.length
+  var totalProcess = 0;
+  var lenProcess = dataList.length
   if(dataList.length > 0){
     for(var i = 0; i < dataList.length; i++){
       invoiceNo[i] = dataList[i].invoice_no;
@@ -766,7 +811,7 @@ console.log(dataList)
         {async :true},"utf8"
       );
   
-    let options = {format: "A4"};
+    var options = {format: "A4"};
     filename = "./files/zipInvoice_"+uid+"/"+"Invoice" + invoiceNo[i] +".pdf";
     // console.log(i);
   
@@ -839,51 +884,51 @@ exports.downloadInvoiceFileByPath = async (req, res) => {
 
 exports.readInvoiceExcelFile = async (req, res) => {
   const logNumber = uuidv4();
-
-  let today = new Date();
+  // console.log("aaa")
+  var today = new Date();
   const dd = String(today.getDate()).padStart(2, '0');
   const mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
   const yyyy = today.getFullYear();
   today = mm + '/' + dd + '/' +yyyy + ' '+today.getHours()+':'+today.getMinutes()+':'+today.getSeconds();
   console.log(today);
-  let file = req.files.excelfile
+  var file = req.files.excelfile
   const fileName = file.name;
   
-  let wb= xlsx.read(file.data, {type: "buffer"});
+  var wb= xlsx.read(file.data, {type: "buffer"});
   const wsname = wb.SheetNames[0];
   const ws = wb.Sheets[wsname];
   const excelRows = xlsx.utils.sheet_to_json(ws).length;
   if(excelRows >= 1 ){
   console.log(excelRows);
   // console.log(ws['A1'].v);
-  let cust_name =null;
-  let cust_add =null;
-  let cust_id =null;
-  let account_no =null;
-  let tax_invoice_no =null;
-  let invoice_no =null;
-  let issue_date =null;
-  let tax_id =null;
-  let cust_mobile =null;
-  let bill_cycle_start =null;
-  let expresstion =null;
-  let bill_cycle_end =null;
-  let over_fee =null;
-  let special_number_fee =null;
-  let supple_promotion =null;
-  let sms =null;
-  let mms =null;
-  let oversea =null;
-  let roaming =null;
-  let other =null;
-  let sum_over_package =null;
-  let out_bal =null;
-  let total_out_bal =null;
-  let vat =null;
-  let amount =null;
+  var cust_name =null;
+  var cust_add =null;
+  var cust_id =null;
+  var account_no =null;
+  var tax_invoice_no =null;
+  var invoice_no =null;
+  var issue_date =null;
+  var tax_id =null;
+  var cust_mobile =null;
+  var bill_cycle_start =null;
+  var expresstion =null;
+  var bill_cycle_end =null;
+  var over_fee =null;
+  var special_number_fee =null;
+  var supple_promotion =null;
+  var sms =null;
+  var mms =null;
+  var oversea =null;
+  var roaming =null;
+  var other =null;
+  var sum_over_package =null;
+  var out_bal =null;
+  var total_out_bal =null;
+  var vat =null;
+  var amount =null;
 
-  let insertData =[];
-  for (let i = 2; i <= excelRows+1; i++) {
+  var insertData =[];
+  for (var i = 2; i <= excelRows+1; i++) {
     if(ws['A'+i] != null )
     cust_name   = ws['A'+i].w.toString().trim() ;
     else
@@ -966,7 +1011,7 @@ exports.readInvoiceExcelFile = async (req, res) => {
     amount =ws['Y'+i].v.toString().trim() ;
     else amount= '0';
     // console.log(amount)
-    let dataList = {
+    var dataList = {
       cust_name :cust_name,
       cust_add :cust_add,
       cust_id :cust_id,
@@ -1005,7 +1050,7 @@ exports.readInvoiceExcelFile = async (req, res) => {
         res.status(500).send(err);
       });
 
-  let dataLog = {
+  var dataLog = {
     file_name :fileName,
     upload_date :today,
     log_number :logNumber,
@@ -1117,4 +1162,137 @@ exports.deleteUpload = async (req, res) => {
   res.send("success");
 };
 
- 
+exports.exportStatementToPatch = async (req, res) => {
+  const dataList = await billingService.findNotImportStatement();
+  console.log("Statement must Export File : "+dataList.length);
+  if(dataList.length >0 ){
+    console.log('------------------ Start Export Statement ------------------');
+    const uid = uuidv4();
+    const filepath = "./files/zipStatement_" + uid + ".zip";
+    
+    var invoiceNo = [];
+    totalProcess = 0;
+    lenProcess =dataList.length;
+    for (var i = 0; i < dataList.length; i++) {
+      var phone = dataList[i].cust_mobile.toString().trim();
+      invoiceNo[i] = dataList[i].invoice_no.toString().trim();
+      var accountNo = dataList[i].account_no.toString().trim().replace(/[^0-9]/g,'');
+      var totalOutBalStr = Number(dataList[i].total_out_bal.toString().trim()).toFixed(2).replace(/[^0-9]/g,'');
+      var scanTxtCode = '|010554612702201\\n'+accountNo+'\\n'+invoiceNo[i].replace(/[^0-9]/g,'')+'\\n'+totalOutBalStr;
+      var scanTxtCodeShow = '|010554612702201 '+accountNo+' '+invoiceNo[i].replace(/[^0-9]/g,'')+' '+totalOutBalStr;
+      var totalOutBalTxt = bahttext.bahttext(Number(dataList[i].total_out_bal.toString().trim()));
+      var totalOutBalTxt = bahttext.bahttext(Number(dataList[i].total_out_bal.toString().trim()));
+      var issue_date = dataList[i].issue_date.toString().trim().replaceAll('/', '');
+      var detailList = await billingSubService
+        .fileByDateAndPhone(invoiceNo[i])
+        .then((data) => {
+          return data;
+        });
+  
+      var groupList = await billingSubService
+        .fileGroupByDateAndPhone(invoiceNo[i])
+        .then((data) => {
+          return data;
+        });
+  
+      var html = await ejs.renderFile(
+        "./templates/pdfTemplateStatementScan.html.ejs",
+        {
+          rows: dataList[i],
+          detail: detailList,
+          group: groupList,
+          totalOutBalTxt:totalOutBalTxt,
+          scanTxtCode:scanTxtCode,
+          scanTxtCodeShow:scanTxtCodeShow,
+          chkNum:i
+        },
+        { async: true }
+      );
+  
+      var options = { format: "A4" };
+      var file = { content: html };
+      filename = "./files/Statement/"+accountNo+"/"+"Statement" + invoiceNo[i] +".pdf";
+    
+      // await genPDF(html, options,filename) ;
+      pdf.create(html, options).toFile(filename,(err, res)=>{
+            console.log(res)
+            totalProcess++;
+          });
+    }
+  
+    while(totalProcess  < lenProcess){
+      await sleep(1000);
+      console.log(totalProcess);
+    }
+
+    console.log('------------------ End Export Statement ------------------')
+  }
+};
+
+
+
+exports.exportInvoiceToPatch = async (req, res) => {
+  const dataList = await invoiceService.findNotImportInvoice();
+  console.log("data : "+dataList.length);
+  if(dataList.length >0 ){
+    console.log('------------------ Start Export Invoice ------------------');
+  // const nowDate = Date.now();
+  var date_ob = new Date();
+  var date = ("0" + date_ob.getDate()).slice(-2);
+  var month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
+  var year = date_ob.getFullYear();
+  
+  var filename = [];
+  var invoiceNo = [];
+
+  var nowDate = date+"/"+month+"/"+(year);
+
+  var bathText = '';
+  var feeAmt =0;
+  var allAmt =0;
+  
+  var html=""
+  var totalProcess = 0;
+  var lenProcess = dataList.length
+    for(var i = 0; i < dataList.length; i++){
+      invoiceNo[i] = dataList[i].invoice_no;
+      var accountNo = dataList[i].account_no.toString().trim().replace(/[^0-9]/g,'');
+      feeAmt = (Math.round((dataList[i].vat)*100)/100);
+      allAmt = Number(Math.round((dataList[i].amount)*100)/100).toFixed(2);
+      bathText = bahttext.bahttext(allAmt) ;
+  
+      html = await ejs.renderFile(
+        "./templates/pdfTemplateInvoice.html.ejs",
+        {
+          rows: dataList[i],
+          nowDate : nowDate,
+          feeAmt:feeAmt,
+          allAmt:allAmt,
+          bathText:bathText,
+        },
+        {async :true},"utf8"
+      );
+  
+    var options = {format: "A4"};
+    filename = "./files/Invoice/"+accountNo+"/"+"Invoice" + invoiceNo[i] +".pdf";
+    // console.log(i);
+  
+    // await genPDF(html, options,filename) ;
+    pdf.create(html, options).toFile(filename,(err, res)=>{
+          console.log(res)
+          totalProcess++;
+        });
+        
+    }
+    
+      
+    while(totalProcess  < lenProcess){
+      // setTimeout(() => {  console.log("World!"); }, 2000);
+      await sleep(1000);
+    }
+    console.log('------------------ Start Export Invoice ------------------');
+  }
+
+};
+
+

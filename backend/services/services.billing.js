@@ -139,5 +139,21 @@ module.exports = {
       const dataList =  db.sequelize.query(`SELECT * FROM db_billing  WHERE STR_TO_DATE(issue_date,'%d/%m/%Y')  BETWEEN STR_TO_DATE('${startDate}','%d/%m/%Y') AND STR_TO_DATE('${endDate}','%d/%m/%Y')  `, { type: QueryTypes.SELECT });
       resolve(dataList);
     });
+  },
+
+  findNotImportStatement: () => {
+    return new Promise((resolve, reject) => {
+      Billing.findAll({
+          where: { file_status_id: "0" },
+      })
+      .then((data) => {
+        resolve(data);
+      })
+      .catch((err) => {
+        resolve(err);
+      });
+  });
   }
+
+  
 }

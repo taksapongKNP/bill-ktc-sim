@@ -148,10 +148,11 @@ export const InvoiceManage: React.FC<any> = () => {
         <Col span="3">
           <Form name="file-upload-form" onFinish={uploadFile} >
               <h3>Import File</h3>
+              <Form.Item name="excelfile">
               <Upload  accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" maxCount={1}>
                 <Button icon={<UploadOutlined />}>Upload</Button> 
               </Upload >
-              <br/>
+              </Form.Item>
               <Button  type="primary" icon={<ArrowRightOutlined />} htmlType="submit">Submit</Button>
           </Form>
         </Col>

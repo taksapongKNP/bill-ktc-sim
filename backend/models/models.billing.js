@@ -25,10 +25,6 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING,
         allowNull: true,
       },
-      issue_STRING: {
-        type: Sequelize.STRING,
-        allowNull: true,
-      },
       tax_id: {
         type: Sequelize.STRING,
         allowNull: true,
@@ -101,6 +97,10 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING,
         allowNull: true,
       },
+      paid_amount: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
       total_out_bal: {
         type: Sequelize.STRING,
         allowNull: true,
@@ -113,7 +113,7 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING,
         allowNull: true,
       },
-      current_due_STRING: {
+      current_due_date: {
         type: Sequelize.STRING,
         allowNull: true,
       },
@@ -121,7 +121,7 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING,
         allowNull: true,
       },
-      cut_STRING: {
+      cut_date: {
         type: Sequelize.STRING,
         allowNull: true,
       },
@@ -130,6 +130,22 @@ module.exports = (sequelize, Sequelize) => {
         allowNull: true,
       },
       log_number: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      pay_type_id: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      pay_type_name: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      file_status_id: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      file_status_name: {
         type: Sequelize.STRING,
         allowNull: true,
       }

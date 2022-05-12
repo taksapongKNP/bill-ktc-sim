@@ -134,6 +134,14 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING,
         allowNull: true,
       },
+      file_status_id: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      file_status_name: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      }
     
     },
     {

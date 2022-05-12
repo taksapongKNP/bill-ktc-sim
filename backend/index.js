@@ -22,7 +22,9 @@ server.use("/font", express.static(__dirname +'/templates/fonts/'));
 server.use("/files", express.static(__dirname +'/files'));
 server.use("/download-files", express.static(__dirname +'/download-files'));
 
+server.use("/templates", express.static(__dirname +'/templates/'));
 server.use("/templates/images", express.static(__dirname +'/templates/image/'));
+
 server.use("/api/users", require("./routes/rounter.users.js"));
 server.use("/api/survey", require("./routes/rounter.survey.js"));
 server.use("/api/surveyDetails", require("./routes/rounter.surveyDetails.js"));

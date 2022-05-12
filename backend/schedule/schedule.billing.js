@@ -18,30 +18,32 @@ const schedule = require('node-schedule');
 
 server.use("/files", express.static(__dirname +'/files'));
 
-const billingService = require("../services/services.billing");
-const billingSubService = require("../services/services.billingSub");
-const invoiceService = require("../services/services.invoice");
-const uploadLogService = require("../services/services.uploadLog");
+const billingController = require("../controllers/controller.billing");
 
-schedule.scheduleJob('00 21 14 * * 0-6', async function(){
+schedule.scheduleJob('00 52 15 * * *', async function(){
     console.log('-------------------- Check Import --------------------');
-    const logList = await uploadLogService.findByDate(new Date().toISOString().slice(0, 10))
-    .then((data) => {
-      return data;
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).send(err);
-    });
-    // console.log(logList);
-    logList.forEach(log => {
-      console.log(log)
-      if(log.file_type_id == '1'){
+    await billingController.exportStatementToPatch();
+    await billingController.exportInvoiceToPatch();
+
+
+    
+    // const logList = await uploadLogService.findByDate(new Date().toISOString().slice(0, 10))
+    // .then((data) => {
+    //   return data;
+    // })
+    // .catch((err) => { 
+    //   console.log(err);
+    //   res.status(500).send(err);
+    // });
+    // // console.log(logList);
+    // logList.forEach(log => {
+    //   console.log(log)
+    //   if(log.file_type_id == '1'){
         
-      }else if(log.file_type_id == '2'){
+    //   }else if(log.file_type_id == '2'){
   
-      }
-    });
+    //   }
+    // });
     // console.log("--------------------------------");
     // for(var i = 0; i < logList.length; i++) {
     //   console.log(logList[i]);
