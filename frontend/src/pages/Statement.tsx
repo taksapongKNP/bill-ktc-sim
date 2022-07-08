@@ -1,7 +1,7 @@
-import React,{ useState, useEffect, useRef} from 'react';
+import React from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
-import { Card, Alert,Row, Typography, Tabs } from 'antd';
-import { useIntl, FormattedMessage } from 'umi';
+import { Card,  Tabs } from 'antd';
+// import { useIntl, FormattedMessage } from 'umi';
 
 import { StatementTable } from './statement/statementTable';
 import { StatementManage } from './statement/statementManage';
@@ -12,7 +12,7 @@ const { TabPane } = Tabs;
 
 export default (): React.ReactNode => {
 
-  const intl = useIntl();
+  // const intl = useIntl();
   return (
     <PageContainer>
       <Card>

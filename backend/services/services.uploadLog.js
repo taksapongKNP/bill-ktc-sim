@@ -84,6 +84,21 @@ module.exports = {
         });
     });
   },
+  updateByCreateFile: (data) => {
+    return new Promise((resolve, reject) => {
+        UploadLog.update(data, {
+            where: { file_created_status: false },
+        })
+        .then((data) => {
+          resolve({
+            message: "Teams was update successfully!",
+          });
+        })
+        .catch((err) => {
+          resolve(err);
+        });
+    });
+  },
   updateByLogNumber: (logNumber, data) => {
     return new Promise((resolve, reject) => {
         UploadLog.update(data, {

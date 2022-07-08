@@ -140,7 +140,19 @@ module.exports = {
       resolve(dataList);
     });
   },
-
+  findStatementByLog: (log_number) => {
+    return new Promise((resolve, reject) => {
+        Billing.findAll({
+            where: { log_number: log_number },
+        })
+        .then((data) => {
+          resolve(data);
+        })
+        .catch((err) => {
+          resolve(err);
+        });
+    });
+  },
   findNotImportStatement: () => {
     return new Promise((resolve, reject) => {
       Billing.findAll({
@@ -153,7 +165,20 @@ module.exports = {
         resolve(err);
       });
   });
-  }
+  },
+  findOneAny: (caseValue ) => {
+    return new Promise((resolve, reject) => {
+        Billing.findAll({
+            where: caseValue,
+        })
+        .then((data) => {
+          resolve(data);
+        })
+        .catch((err) => {
+          resolve(err);
+        });
+    });
+  },
 
   
 }

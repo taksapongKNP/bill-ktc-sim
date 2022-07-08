@@ -11,6 +11,7 @@
             path: '/user/login',
             component: './user/Login',
           },
+          
         ],
       },
     ],

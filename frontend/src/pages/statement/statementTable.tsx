@@ -53,7 +53,7 @@ export const StatementTable: React.FC<any> = () => {
             title: 'Export',
             dataIndex: 'invoice_no',
             // key: 'id',
-            render: (text: string, data_survey: string | any[]) => (<a href="#" onClick={() => ExportPDf(text, data_survey)}> Export </a>),
+            render: (text: string, data: string | any[]) => (<a href="#" onClick={() => ExportPDf(text, data)}> Export </a>),
           },
       ];
 

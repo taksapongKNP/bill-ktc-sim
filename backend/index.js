@@ -26,11 +26,6 @@ server.use("/templates", express.static(__dirname +'/templates/'));
 server.use("/templates/images", express.static(__dirname +'/templates/image/'));
 
 server.use("/api/users", require("./routes/rounter.users.js"));
-server.use("/api/survey", require("./routes/rounter.survey.js"));
-server.use("/api/surveyDetails", require("./routes/rounter.surveyDetails.js"));
-server.use("/api/surveyImages", require("./routes/rounter.surveyImages.js"));
-server.use("/api/products", require("./routes/rounter.products.js"));
-server.use("/api/export", require("./routes/rounter.exportExcel.js"));
 server.use("/api/positions", require("./routes/rounter.positions.js"));
 server.use("/api/modules", require("./routes/rounter.modules.js"));
 server.use("/api/modulesmap", require("./routes/rounter.modulesMap.js"));

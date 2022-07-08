@@ -20,7 +20,7 @@ module.exports = {
   Local: {
     HOST: "localhost",
     USER: "osdadmin",
-    PASSWORD: "password",
+    PASSWORD: "osd@1234",
     DB: "bill_sim_ktc",
     dialect: "mysql",
     pool: {

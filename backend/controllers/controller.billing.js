@@ -12,14 +12,18 @@ const JSZip = require("jszip");
 const bahttext =require("bahttext");
 const pdf =   Promise.promisifyAll(require('html-pdf'));
 const pdfToZip =  Promise.promisify(require('html-pdf').create);
-const htmlToPdf = require("html-pdf-node");
+// const htmlToPdf = require("html-pdf-node");
 const xlsx = require("xlsx");
 const ejs = require("ejs");
 const { ConsoleMessage } = require("puppeteer");
 const zipFolder = require("zip-folder");
 const rimraf = require("rimraf");
 const QRCode = require('qrcode');
+const axios = require('axios');
+const utf8 = require('utf8');
 
+
+const homePage ='/home/ubuntu/bill-ktc-sim/backend';
 
 
 server.use("/files", express.static(__dirname +'/files'));
@@ -105,7 +109,7 @@ exports.exportStatement = async (req, res) => {
       { async: true }
     );
   }
-  var options = { format: "A4" };
+  var options = {childProcessOptions: { env: { OPENSSL_CONF: '/dev/null' } } ,format: "A4"};
   var file = { content: html };
 
   pdf.create(html, options).toStream(
@@ -181,7 +185,7 @@ exports.pdfStatementByDate = async (req, res) => {
     );
   }
 
-  var options = {format: "A4",timeout: '600000'};
+  var options = {childProcessOptions: { env: { OPENSSL_CONF: '/dev/null' } },format: "A4",timeout: '600000'};
   var  file = {content: html};
   pdf.create(html, options).toStream(
     (err, stream) => {
@@ -259,7 +263,7 @@ exports.zipStatementByDate = async (req, res) => {
       { async: true }
     );
 
-    var options = { format: "A4" };
+    var options = {childProcessOptions: { env: { OPENSSL_CONF: '/dev/null' } }, format: "A4" };
     var file = { content: html };
     filename = "./files/zipStatement/"+issue_date+"/"+"Statement" + invoiceNo[i] +".pdf";
   
@@ -328,9 +332,9 @@ exports.readStatementExcelFile = async (req, res) => {
   const mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
   const yyyy = today.getFullYear();
   today = mm + '/' + dd + '/' +yyyy + ' '+today.getHours()+':'+today.getMinutes()+':'+today.getSeconds();
-  console.log(today);
+  
   var file = req.files.excelfile
-  const fileName = file.name;
+  const fileName = utf8.decode(file.name.toString())  ;
 
   var wb= xlsx.read(file.data, {type: "buffer"});
   const ws1 = wb.Sheets[wb.SheetNames[0]];
@@ -594,6 +598,29 @@ exports.readStatementExcelFile = async (req, res) => {
   }
   console.log(`this data insert : ${insertData2}`)
   billingSubService.multiCreate(insertData2)
+      .then(async () =>{  
+        var dataLog = {
+          file_name :fileName,
+          upload_date :today,
+          log_number :logNumber,
+          file_type_id : "1",
+          file_type_name : "Statement",
+          log_type_id : "1",
+          log_type_name : "Active",
+          file_created_status : false,
+          
+        }
+      
+        await uploadLogService.create(dataLog)
+        // .then((data) => res.status(200).send("success"))
+        .catch((err) => {
+          console.log(err);
+          res.status(500).send(err);
+        });
+        await exportStatementToPatch();
+        await updateUploadLogCreated();
+        res.status(200).send("success")
+      })
       .catch((err) => {
         console.log(err);
         res.status(500).send(err);
@@ -601,23 +628,7 @@ exports.readStatementExcelFile = async (req, res) => {
   
   
   
-  var dataLog = {
-    file_name :fileName,
-    upload_date :today,
-    log_number :logNumber,
-    file_type_id : "1",
-    file_type_name : "Statement",
-    log_type_id : "1",
-    log_type_name : "Active",
-    
-  }
-
-  uploadLogService.create(dataLog)
-  .then((data) => res.status(200).send("success"))
-  .catch((err) => {
-    console.log(err);
-    res.status(500).send(err);
-  });
+  
   }else{
     console.log("Data not found");
     res.send("Data not found");
@@ -683,11 +694,20 @@ console.log(dataList)
       {async :true},"utf8"
     );
   }
-
-  var options = {format: "A4"};
-  var  file = {content: html};
+  // html ="`<html><body>Test</body></html>"
+  // console.log("start ----------->")
+  var options = {
+    childProcessOptions: { env: { OPENSSL_CONF: '/dev/null' } } ,
+    format: "A4",
+  };
+  // console.log("start ----------->")
   pdf.create(html, options).toStream(
     (err, stream) => {
+      if(err){
+        console.log("err : "+ err);
+        return err;
+      }
+      // console.log("stream : "+ stream)
       // res.setHeader('Content-Type', 'application/pdf')
       res.set({
             "Content-Type": "application/pdf; charset=utf-8;",
@@ -744,7 +764,7 @@ console.log(dataList)
     );
   }
 
-  var options = {format: "A4"};
+  var options = {childProcessOptions: { env: { OPENSSL_CONF: '/dev/null' } },format: "A4"};
   var  file = {content: html};
   pdf.create(html, options).toStream(
     (err, stream) => {
@@ -769,7 +789,7 @@ console.log(dataList)
   
   var filename = [];
   var invoiceNo = [];
-
+  var taxInvoiceNo = [];
   var nowDate = date+"/"+month+"/"+(year);
   const json = JSON.parse(req.params.data);
   // console.log(json.startDate.replaceAll('|','/'));
@@ -795,6 +815,7 @@ console.log(dataList)
   if(dataList.length > 0){
     for(var i = 0; i < dataList.length; i++){
       invoiceNo[i] = dataList[i].invoice_no;
+      taxInvoiceNo[i] = dataList[i].tax_invoice_no;
       feeAmt = (Math.round((dataList[i].vat)*100)/100);
       allAmt = Number(Math.round((dataList[i].amount)*100)/100).toFixed(2);
       bathText = bahttext.bahttext(allAmt) ;
@@ -811,8 +832,8 @@ console.log(dataList)
         {async :true},"utf8"
       );
   
-    var options = {format: "A4"};
-    filename = "./files/zipInvoice_"+uid+"/"+"Invoice" + invoiceNo[i] +".pdf";
+    var options = {childProcessOptions: { env: { OPENSSL_CONF: '/dev/null' } },format: "A4"};
+    filename = "./files/zipInvoice_"+uid+"/"+"Invoice" + taxInvoiceNo[i] +".pdf";
     // console.log(i);
   
     // await genPDF(html, options,filename) ;
@@ -849,6 +870,7 @@ console.log(dataList)
 exports.downloadInvoiceFileByPath = async (req, res) => {
   console.log("download");
   const json = JSON.parse(req.params.pathdata);
+  console.log(json)
   const path = json.path.replaceAll("|", "/");
   try {
     fs.accessSync(path);
@@ -892,14 +914,12 @@ exports.readInvoiceExcelFile = async (req, res) => {
   today = mm + '/' + dd + '/' +yyyy + ' '+today.getHours()+':'+today.getMinutes()+':'+today.getSeconds();
   console.log(today);
   var file = req.files.excelfile
-  const fileName = file.name;
-  
+  const fileName = utf8.decode(file.name.toString())  ;
   var wb= xlsx.read(file.data, {type: "buffer"});
   const wsname = wb.SheetNames[0];
   const ws = wb.Sheets[wsname];
   const excelRows = xlsx.utils.sheet_to_json(ws).length;
   if(excelRows >= 1 ){
-  console.log(excelRows);
   // console.log(ws['A1'].v);
   var cust_name =null;
   var cust_add =null;
@@ -1044,35 +1064,39 @@ exports.readInvoiceExcelFile = async (req, res) => {
   }
   console.log(`this data insert : ${insertData}`)
   invoiceService.multiCreate(insertData)
-      // .then((data) => res.send(data))
+      .then(async () => {  
+        var dataLog = {
+          file_name :fileName,
+          upload_date :today,
+          log_number :logNumber,
+          file_type_id : "2",
+          file_type_name : "Invoice",
+          log_type_id : "1",
+          log_type_name : "Active",
+          file_created_status : false,
+          
+        }
+        await uploadLogService.create(dataLog)
+        .catch((err) => {
+          console.log(err);
+          res.status(500).send(err);
+        });
+        await exportInvoiceToPatch();
+        await updateUploadLogCreated();
+        res.status(200).send("success");
+      })
       .catch((err) => {
         console.log(err);
         res.status(500).send(err);
       });
 
-  var dataLog = {
-    file_name :fileName,
-    upload_date :today,
-    log_number :logNumber,
-    file_type_id : "2",
-    file_type_name : "Invoice",
-    log_type_id : "1",
-    log_type_name : "Active",
-    
-  }
-
-  uploadLogService.create(dataLog)
-  .then((data) => res.send(data))
-  .catch((err) => {
-    console.log(err);
-    res.status(500).send(err);
-  });
+  
 
   }else{
     console.log("Data not found");
     res.send("Data not found");
   }
-
+  res.send("Data not found");
 };
 
 
@@ -1080,18 +1104,18 @@ exports.readInvoiceExcelFile = async (req, res) => {
 
 
 //Function
-function getBuffer(file, options) {
-  var buffer = htmlToPdf
-    .generatePdf(file, options)
-    .then((pdfBuffer) => {
-      console.log(pdfBuffer);
-      return pdfBuffer;
-    })
-    .catch((err) => {
-      res.send({ success: false, err: err });
-    });
-  return buffer;
-}
+// function getBuffer(file, options) {
+//   var buffer = htmlToPdf
+//     .generatePdf(file, options)
+//     .then((pdfBuffer) => {
+//       console.log(pdfBuffer);
+//       return pdfBuffer;
+//     })
+//     .catch((err) => {
+//       res.send({ success: false, err: err });
+//     });
+//   return buffer;
+// }
 
 const genPDF = async () =>{
   await pdf.create(html, options).toFile(filename,(err, res)=>{
@@ -1130,39 +1154,7 @@ exports.findUploadLog = async (req, res) => {
   // res.send("success");
 };
 
-exports.deleteUpload = async (req, res) => {
-  console.log(req.body.log_number);
-  const logNumber = req.body.log_number;
-  const fileTypeId = req.body.file_type_id;
-  if(fileTypeId == '1'){
-    billingService.deleteByLogNumber(logNumber)
-       .catch((err) => {
-         console.log(err);
-         res.status(500).send(err);
-       });
-    billingSubService.deleteByLogNumber(logNumber)
-       .catch((err) => {
-         console.log(err);
-         res.status(500).send(err);
-       });
-  }else if(fileTypeId == '2'){
-    invoiceService.deleteByLogNumber(logNumber)
-    .catch((err) => {
-      console.log(err);
-      res.status(500).send(err);
-    });
-  }
-  const dataUpdate ={log_type_id : '2' ,log_type_name:'Deleted'};
-    uploadLogService.updateByLogNumber(logNumber,dataUpdate)
-    // .then((data) => res.send(data))
-    .catch((err) => {
-             console.log(err);
-             res.status(500).send(err);
-           });
-  res.send("success");
-};
-
-exports.exportStatementToPatch = async (req, res) => {
+const exportStatementToPatch = async () => {
   const dataList = await billingService.findNotImportStatement();
   console.log("Statement must Export File : "+dataList.length);
   if(dataList.length >0 ){
@@ -1174,9 +1166,11 @@ exports.exportStatementToPatch = async (req, res) => {
     totalProcess = 0;
     lenProcess =dataList.length;
     for (var i = 0; i < dataList.length; i++) {
+      let id =dataList[i].id
       var phone = dataList[i].cust_mobile.toString().trim();
       invoiceNo[i] = dataList[i].invoice_no.toString().trim();
-      var accountNo = dataList[i].account_no.toString().trim().replace(/[^0-9]/g,'');
+      var accountNo = dataList[i].account_no.toString().trim();
+      var logNumber = dataList[i].log_number.toString().trim();
       var totalOutBalStr = Number(dataList[i].total_out_bal.toString().trim()).toFixed(2).replace(/[^0-9]/g,'');
       var scanTxtCode = '|010554612702201\\n'+accountNo+'\\n'+invoiceNo[i].replace(/[^0-9]/g,'')+'\\n'+totalOutBalStr;
       var scanTxtCodeShow = '|010554612702201 '+accountNo+' '+invoiceNo[i].replace(/[^0-9]/g,'')+' '+totalOutBalStr;
@@ -1209,14 +1203,28 @@ exports.exportStatementToPatch = async (req, res) => {
         { async: true }
       );
   
-      var options = { format: "A4" };
+      var options = { childProcessOptions: { env: { OPENSSL_CONF: '/dev/null' } },format: "A4" };
       var file = { content: html };
-      filename = "./files/Statement/"+accountNo+"/"+"Statement" + invoiceNo[i] +".pdf";
+      filename = "./files/statement/"+logNumber+"/"+accountNo+"/"+"Statement" + invoiceNo[i] +".pdf";
     
       // await genPDF(html, options,filename) ;
       pdf.create(html, options).toFile(filename,(err, res)=>{
-            console.log(res)
-            totalProcess++;
+        if(err){
+          console.log("can't create file : "+ err)
+        }
+        else{
+          console.log("create file : " + filename)
+          let reference_number = "invoice"+uuidv4(); 
+          totalProcess++;
+          const dataUpdate ={file_status_id : '1' ,file_status_name:'Created',reference_number:reference_number};
+          billingService.update(id,dataUpdate)
+            // .then((data) => res.send(data))
+            .catch((err) => {
+                     console.log(err);
+                     res.status(500).send(err);
+                   });
+        }
+            
           });
     }
   
@@ -1230,8 +1238,8 @@ exports.exportStatementToPatch = async (req, res) => {
 };
 
 
-
-exports.exportInvoiceToPatch = async (req, res) => {
+ 
+const exportInvoiceToPatch = async () => {
   const dataList = await invoiceService.findNotImportInvoice();
   console.log("data : "+dataList.length);
   if(dataList.length >0 ){
@@ -1256,7 +1264,9 @@ exports.exportInvoiceToPatch = async (req, res) => {
   var lenProcess = dataList.length
     for(var i = 0; i < dataList.length; i++){
       invoiceNo[i] = dataList[i].invoice_no;
-      var accountNo = dataList[i].account_no.toString().trim().replace(/[^0-9]/g,'');
+      let id =dataList[i].id;
+      var accountNo = dataList[i].account_no.toString().trim();
+      let logNumber =dataList[i].log_number.toString().trim()
       feeAmt = (Math.round((dataList[i].vat)*100)/100);
       allAmt = Number(Math.round((dataList[i].amount)*100)/100).toFixed(2);
       bathText = bahttext.bahttext(allAmt) ;
@@ -1273,26 +1283,209 @@ exports.exportInvoiceToPatch = async (req, res) => {
         {async :true},"utf8"
       );
   
-    var options = {format: "A4"};
-    filename = "./files/Invoice/"+accountNo+"/"+"Invoice" + invoiceNo[i] +".pdf";
+    var options = {childProcessOptions: { env: { OPENSSL_CONF: '/dev/null' } },format: "A4"};
+    filename = "./files/invoice/"+logNumber+"/"+accountNo+"/"+"Invoice_" + invoiceNo[i] +".pdf";
     // console.log(i);
   
     // await genPDF(html, options,filename) ;
-    pdf.create(html, options).toFile(filename,(err, res)=>{
-          console.log(res)
+     pdf.create(html, options).toFile(filename,(err, res)=>{
+          if(err){
+            console.log("can't create file : "+ err)
+          }
+          else{
+            console.log("create file : " + filename)
+            let reference_number = "invoice"+uuidv4(); 
           totalProcess++;
+            const dataUpdate ={file_status_id : '1' ,file_status_name:'Created',reference_number: reference_number};
+             invoiceService.update(id,dataUpdate)
+              // .then((data) => res.send(data))
+              .catch((err) => {
+                       console.log(err);
+                       res.status(500).send(err);
+                     });
+          }
         });
-        
+       
     }
-    
-      
+
+
     while(totalProcess  < lenProcess){
       // setTimeout(() => {  console.log("World!"); }, 2000);
       await sleep(1000);
     }
-    console.log('------------------ Start Export Invoice ------------------');
+    console.log('------------------ End Export Invoice ------------------');
   }
 
 };
 
+const updateUploadLogCreated = async (req, res) => {
+  uploadLogService.updateByCreateFile({file_created_status : true});
+  
 
+};
+
+exports.deleteUpload = async (req, res) => {
+  console.log(req.body.log_number);
+  const logNumber = req.body.log_number;
+  const fileTypeId = req.body.file_type_id;
+  if(fileTypeId == '1'){
+    billingService.deleteByLogNumber(logNumber)
+       .catch((err) => {
+         console.log(err);
+         res.status(500).send(err);
+       });
+    billingSubService.deleteByLogNumber(logNumber)
+       .catch((err) => {
+         console.log(err);
+         res.status(500).send(err);
+       });
+    rimraf("./files/statement/"+logNumber, function () { console.log("Deleted file by log : "+logNumber); });
+  }else if(fileTypeId == '2'){
+    
+    invoiceService.deleteByLogNumber(logNumber)
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send(err);
+    });
+    rimraf("./files/invoice/"+logNumber, function () { console.log("Deleted file by log : "+logNumber); });
+  }
+    
+  const dataUpdate ={log_type_id : '2' ,log_type_name:'Deleted'};
+    uploadLogService.updateByLogNumber(logNumber,dataUpdate)
+    // .then((data) => res.send(data))
+    .catch((err) => {
+             console.log(err);
+             res.status(500).send(err);
+           });
+  res.send("success");
+};
+
+
+exports.sendSmsByLog = async (req, res) => {
+  const logNumber = req.body.log_number;
+  const fileTypeId = req.body.file_type_id;
+  let phones =[]
+ 
+  if(fileTypeId == '1'){
+   console.log("send sms statement");
+   const statementList = await billingService.findStatementByLog(logNumber).then((data) => {return data;})
+   if(statementList.length >0){
+    for(let i = 0; i < statementList.length; i++){
+      // console.log(statementList[i].cust_mobile)
+      phones.push({
+        phone : "0846278613",
+        mess : "KTC Invoice : http://localhost:3000/files/statement/"+statementList[i].reference_number
+      })
+    }
+  }
+  }else if(fileTypeId == '2'){
+    console.log("send sms invoice");
+    const invoiceList = await invoiceService
+   .findInvoiceByLog(logNumber)
+   .then((data) => {
+     return data;
+   })
+   if(invoiceList.length >0){
+     for(let i = 0; i < invoiceList.length; i++){
+      phones.push({
+        phone : "0846278613",
+        mess : "KTC Invoice : http://localhost:3000/files/invoice/"+invoiceList[i].reference_number
+      })
+     }
+   }
+  }
+  // Start Axios
+    var userSend = JSON.stringify({
+      username:"dsms",password: "dsms1234"
+    });
+    var dataSMS = JSON.stringify({
+      account: "OSD",
+      sender: "KONDEE",
+      phones: phones,
+    });
+    console.log(dataSMS);
+    
+    const options = {
+      method: "post",
+      url: "http://192.168.102.168:8080/authenticate",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: userSend,
+    };
+    axios(options)
+      .then(function (response) {
+        const result = JSON.stringify(response.data);
+        if (result) {
+          var dataSMS = JSON.stringify({
+            account: "OSD",
+            sender: "KONDEE",
+            phones: phones,
+          });
+          console.log(dataSMS);
+          const SendSMS = {
+            method: "post",
+            url: "http://192.168.102.168:8080/send",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer" + result,
+            },
+            data: dataSMS,
+          };
+          axios(SendSMS)
+            .then(function (response) {
+              console.log(JSON.stringify(response.data));
+            })
+            .catch(function (error) {
+              console.log(error);
+            });
+        } else {
+          return "Error";
+        }
+        // console.log();
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  //End Axios
+
+  const dataUpdate ={file_created_status : '2' };
+    uploadLogService.updateByLogNumber(logNumber,dataUpdate)
+    // .then((data) => res.send(data))
+    .catch((err) => {
+             console.log(err);
+             res.status(500).send(err);
+           });
+  res.send("success");
+};
+
+exports.downloadFileBySmsCus = async (req, res) => {
+  
+  if(req.params.type == 'statement'){
+    let detail ={reference_number : req.params.refNumber}
+    const statement = await billingService.findOneAny(detail).then((data) => {return data;});
+    const file = `${homePage}/files/statement/`+statement[0].log_number+`/`+statement[0].account_no+`/Invoice_`+statement[0].invoice_no+`.pdf`;
+    // res.download(file);
+    let stream = fs.createReadStream(file);
+    let stat = fs.statSync(file);
+    res.setHeader('Content-Length', stat.size);
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename=Invoice_'+statement[0].invoice_no+'.pdf');
+    stream.pipe(res);
+  }else if(req.params.type == 'invoice'){
+    let detail ={reference_number : req.params.refNumber}
+    const invoice = await invoiceService.findOneAny(detail).then((data) => {return data;});
+    const file = `${homePage}/files/invoice/`+invoice[0].log_number+`/`+invoice[0].account_no+`/Invoice_`+invoice[0].invoice_no+`.pdf`;
+    // const path = `${__dirname}/files/img.jpeg`; 
+    // const filePath = fs.createWriteStream(file);
+    
+    let stream = fs.createReadStream(file);
+    let stat = fs.statSync(file);
+    res.setHeader('Content-Length', stat.size);
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename=Invoice_'+invoice[0].invoice_no+'.pdf');
+    stream.pipe(res);
+    // res.download(file);
+  }
+  // res.send("Success");
+}

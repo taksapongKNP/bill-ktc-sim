@@ -43,6 +43,7 @@ exports.create = async (req, res) => {
 
 //Create Token
 exports.login = (req, res) => {
+  console.log(req.body)
   if (!req.body.username || !req.body.password) {
     res.status(400).send({
       message: "username or password can not be empty!",

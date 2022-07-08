@@ -77,6 +77,7 @@
     "react-sketch-whiteboard": "^3.9.3",
     "read-excel-file": "^5.2.9",
     "reqwest": "^2.0.5",
+    "sweetalert2": "^11.4.17",
     "umi": "^v3.4.0",
     "umi-plugin-dynamic-antd-theme": "^3.1.0",
     "utf8": "^3.0.0",

@@ -47,14 +47,14 @@ export async function getInitialState(): Promise<{
 
 export const request: RequestConfig = {
   errorHandler: (error: any) => {
-    const { response } = error;
+    // const { response } = error;
 
-    if (!response) {
-      notification.error({
-        description: '您的网络发生异常，无法连接服务器',
-        message: '网络异常',
-      });
-    }
+    // if (!response) {
+    //   notification.error({
+    //     description: '您的网络发生异常，无法连接服务器',
+    //     message: '网络异常',
+    //   });
+    // }
     throw error;
   },
 };

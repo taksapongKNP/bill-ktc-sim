@@ -1,5 +1,5 @@
 const { Sequelize } = require("sequelize");
-const { Local,LocalTest,dbDev } = require("../config/index");
+const { Local,LocalTest, dbDev } = require("../config/index");
 
 console.log(`this host is : ${dbDev.HOST}`)
 
@@ -38,20 +38,13 @@ const sequelize = new Sequelize(dbDev.DB, dbDev.USER, dbDev.PASSWORD, {
 const db = {};
 
 db.users = require("./models.users.js")(sequelize, Sequelize);
-db.survey = require("./models.survey")(sequelize, Sequelize);
-db.surveyDetails = require("./models.surveyDetails")(sequelize, Sequelize);
-db.surveyForm = require("./models.surveyForm")(sequelize, Sequelize);
-db.surveyImages = require("./models.surveyImages")(sequelize, Sequelize);
-db.products = require("./models.products")(sequelize, Sequelize);
 db.modules = require("./models.modules")(sequelize, Sequelize);
 db.modulesMap = require("./models.modulesMap")(sequelize, Sequelize);
 db.levels = require("./models.levels")(sequelize, Sequelize);
-db.exportexcel = require("./models.exportExcel.js");
 db.positions = require("./models.positions")(sequelize, Sequelize);
 db.teams = require("./models.teams")(sequelize, Sequelize);
 db.teamsMap = require("./models.teamsMap")(sequelize, Sequelize);
 db.billing = require("./models.billing")(sequelize, Sequelize);
-db.serviceCharge = require("./models.serviceCharge")(sequelize, Sequelize);
 db.billingSub = require("./models.billingSub")(sequelize, Sequelize);
 db.invoice = require("./models.invoice")(sequelize, Sequelize);
 db.uploadLog = require("./models.uploadLog")(sequelize, Sequelize);

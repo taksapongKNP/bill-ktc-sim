@@ -140,7 +140,19 @@ module.exports = {
       resolve(dataList);
     });
   },
-
+  findInvoiceByLog: (log_number) => {
+    return new Promise((resolve, reject) => {
+        Invoice.findAll({
+            where: { log_number: log_number },
+        })
+        .then((data) => {
+          resolve(data);
+        })
+        .catch((err) => {
+          resolve(err);
+        });
+    });
+  },
   findNotImportInvoice: () => {
     return new Promise((resolve, reject) => {
       Invoice.findAll({
@@ -153,5 +165,18 @@ module.exports = {
         resolve(err);
       });
   });
+  },
+  findOneAny: (caseValue ) => {
+    return new Promise((resolve, reject) => {
+        Invoice.findAll({
+            where: caseValue,
+        })
+        .then((data) => {
+          resolve(data);
+        })
+        .catch((err) => {
+          resolve(err);
+        });
+    });
   }
 }

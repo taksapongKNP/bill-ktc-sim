@@ -17,20 +17,27 @@ export async function currentUser(options?: { [key: string]: any }) {
 
 
 export async function outLogin(options?: { [key: string]: any }) {
+  const token = localStorage.getItem('token');
   return request<Record<string, any>>('/api/login/outLogin', {
     method: 'POST',
     headers: {
       'Content-Type': 'multipart/form-data',
+      Authorization: `Bearer ${token}`,
     },
     ...(options || {}),
   });
 }
 
 export async function login(body: API.LoginParams, options?: { [key: string]: any }) {
+  console.log(body)
   return request<API.LoginResult>(`${urlBackend}/api/users/login`, {
     method: 'POST',
+    headers: { 
+      'Content-Type': 'application/json'
+    },
     data: body,
-    ...(options || {}),
+    ...(body || {}),
+    
   });
 }
 
@@ -93,6 +100,7 @@ export async function getPositionsAll(options?: { [key: string]: any }) {
   return request<any>(`${urlBackend}/api/positions`, {
     method: 'GET',
     headers: {
+      'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     },
     ...(options || {}),
@@ -111,16 +119,26 @@ export async function getdataBilling (){
 }
 
 export async function downloadPdfBilling(data: any) {
+  const token = localStorage.getItem('token');
   return request<any>(`${urlBackend}/api/billing/statement/pdf/${data}`, {
     method: 'GET',
+    headers:{
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
     data: data,
     ...(data || {}),
   });
 }
 
 export async function getdataBillingByDate (data: any){
+  const token = localStorage.getItem('token');
   return request<any>(`${urlBackend}/api/billing/statement/findByDate/${data}`, {
     method: 'POST',
+    headers:{
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
     data: data,
     ...(data || {}),
   })
@@ -135,8 +153,13 @@ export async function getdataBillingByDate (data: any){
 // }
 
 export async function exportZipByDate (data: any){
+  const token = localStorage.getItem('token');
   return request<any>(`${urlBackend}/api/billing/statement/zipByDate/${data}`, {
     method: 'GET',
+    headers :{
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
     data: data,
     ...(data || {}),
   })
@@ -144,24 +167,38 @@ export async function exportZipByDate (data: any){
 //Invoice
 
 export async function getdataInvoiceByDate (data: any){
+  const token = localStorage.getItem('token');
   return request<any>(`${urlBackend}/api/billing/invoice/findByDate/${data}`, {
     method: 'POST',
+    headers:{
+      Authorization: `Bearer ${token}`,
+    },
     data: data,
     ...(data || {}),
   })
 }
 
 export async function exportZipInvoiceByDate (data: any){
+  const token = localStorage.getItem('token');
   return request<any>(`${urlBackend}/api/billing/invoice/zipByDate/${data}`, {
     method: 'GET',
+    headers:{
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
     data: data,
     ...(data || {}),
   })
 }
 
 export async function readExcelFile (data: any){
+  const token = localStorage.getItem('token');
   return request<any>(`${urlBackend}/api/billing/invoice/readExcelFile`, {
     method: 'POST',
+    headers:{
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
     data: data,
     ...(data || {}),
   })
@@ -183,6 +220,21 @@ export async function deleteDataFormLog(data:any) {
   return request<any>(`${urlBackend}/api/billing/uploadLog/delete`, {
     method: 'PUT',
     headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    data: data,
+    ...(data || {}),
+    
+  });
+}
+
+export async function sendSmsFormLog(data:any) {
+  const token = localStorage.getItem('token');
+  return request<any>(`${urlBackend}/api/billing/uploadLog/sendSms`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     },
     data: data,

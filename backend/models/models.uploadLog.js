@@ -26,6 +26,10 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING,
         allowNull: true,
       },
+      file_created_status: {
+        type: Sequelize.BOOLEAN,
+        allowNull: true,
+      },
       log_type_id: {
         type: Sequelize.STRING,
         allowNull: true,
@@ -34,6 +38,7 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING,
         allowNull: true,
       },
+      
       created_at: {
         type: Sequelize.STRING,
         allowNull: true,

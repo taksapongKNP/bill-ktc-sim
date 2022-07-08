@@ -141,6 +141,10 @@ module.exports = (sequelize, Sequelize) => {
       file_status_name: {
         type: Sequelize.STRING,
         allowNull: true,
+      },
+      reference_number : {
+        type: Sequelize.STRING,
+        allowNull: true,
       }
     
     },
