@@ -1,18 +1,35 @@
-import { Table,Form, Row,Col, Upload,Button ,Space ,Spin, message,Badge} from 'antd';
-import React, { useState, useEffect, useRef } from 'react';
+import { Table, Form, Row, Col, Upload, Button, Spin, message, Select } from 'antd';
+import React, { useState, useEffect} from 'react';
 import { getUploadLog,deleteDataFormLog ,sendSmsFormLog} from '@/services/backend/api';
-import Swal from 'sweetalert2'
+// import Swal from 'sweetalert2'
 import {UploadOutlined ,ArrowRightOutlined,FileExcelOutlined} from '@ant-design/icons';
 import axios from 'axios';
+import * as XLSX from "xlsx";
 // import { uploadFile } from '@/services/swagger/pet';
 
 export const InvoiceManage: React.FC<any> = () => {
-  const uploadPath = "http://localhost:3000/api/billing/invoice/readExcelFile";
-    
+  // const uploadPath = 'http://13.213.88.165:3000/api/billing/invoice/readExcelFile';
+  const uploadPath = 'http://localhost:3000/api/billing/invoice/readExcelFile';
+  const uploadPathType = '/invoice/exportInvoiceToPatch';
   const [loadingPage, setLoadingPage] = useState(false);
   const [resData, setResData] = useState([]);
-
+  const [template, setTemplate] = useState('');
+  const [disbledButton, setDisbledButton] = useState(true);
+   const [datatemplate,setDataTemplate] = useState<any[]>([]);   
+  const { Option } = Select;
   
+  // const Url = process.env.REACT_LOCAL_HOST;
+  // console.log(`${Url}`);
+  const handleChange = async (value: string) => {
+    console.log(`${value}`);
+    // console.log(`${Url}`);
+    setTemplate(value);
+     if (value) {
+      setDisbledButton(false);
+    } else {
+      setDisbledButton(true);
+    }
+  };
 
   const columns = [
     // {
@@ -68,6 +85,7 @@ export const InvoiceManage: React.FC<any> = () => {
 
 
   const SendSms = async ( key: string | any[]) => {
+    let phoneList: any[] = [] ;
     if (key) {
       let isExecuted = confirm("ยืนยันการส่ง SMS");
       if(isExecuted === true){
@@ -75,6 +93,7 @@ export const InvoiceManage: React.FC<any> = () => {
           data:key
         };
         await sendSmsFormLog(json).then(res =>{
+          phoneList = res["phones"];
           message.success("Send SMS Success");
           getTable()
         }).catch(error =>{
@@ -96,7 +115,19 @@ export const InvoiceManage: React.FC<any> = () => {
       //   `
       // })
     }
+
+    setLoadingPage(false);
+      const workSheet = XLSX.utils.json_to_sheet(phoneList);
+      const workBook = XLSX.utils.book_new()
+      XLSX.utils.book_append_sheet(workBook, workSheet, "MySheet");
+
+      let buf = XLSX.write(workBook,{bookType:"xlsx",type:"buffer"});
+
+      XLSX.write(workBook,{bookType:"xlsx",type:"binary"});
+
+      XLSX.writeFile(workBook,"SMS_Reciept.xlsx")
   };
+
   const DeleteData = async ( key: string | any[]) => {
         // console.log(key)
     // const excelId = await getDataexport(dataid);
@@ -112,11 +143,8 @@ export const InvoiceManage: React.FC<any> = () => {
         }).catch(error =>{
           message.error("Delete Error");
         });
-        
       }
-     
     }
-
   };
   
   useEffect( () => {
@@ -131,7 +159,6 @@ export const InvoiceManage: React.FC<any> = () => {
       // console.log(dataList);
       (async function fetchdata() {
         const result = dataList
-        console.log(result)
         const data = result.map(
           
           (x: {
@@ -142,6 +169,7 @@ export const InvoiceManage: React.FC<any> = () => {
             log_type_name: any;
             log_number: any;
             file_type_id:any;
+            template_type:any;
             file_created_status: any;
             
           }) => {
@@ -163,6 +191,7 @@ export const InvoiceManage: React.FC<any> = () => {
               file_type_id:x.file_type_id,
               log_type_id:x.log_type_id,
               file_created_status: x.file_created_status,
+              template_type: x.template_type,
               sms_status:sms_status
             };
             return mapData;
@@ -174,62 +203,112 @@ export const InvoiceManage: React.FC<any> = () => {
   }
 
   const DownloadTemp = () =>{
-    window.open(`http://localhost:3000/download-files/template_invoice.xlsx`);
+    // window.open(`http://13.213.88.165:3000/download-files/template_invoice.xlsx`);
+     window.open(`http://localhost:3000/download-files/template_invoice.xlsx`);
   }
-  const uploadFile = (values :any) =>{
+  const uploadFile = async (values :any) =>{
+    var json = {
+      template,
+    };
+    const dataType = JSON.stringify(json);
     console.log('file values');
     console.log(values);
     const data = new FormData();
     data.append("excelfile",values.excelfile.file.originFileObj,values.excelfile.file.originFileObj.name);
+    data.append('typeFile', template);
     // console.log(values.excelfile.file.originFileObj.name);
     // for (let file of values.excelfile.file.originFileObject) {
     //   data.append('photo[]', file);
     // }
     setLoadingPage(true);
-    axios.post(uploadPath,data,{
-      headers: {
-        "Comtent-Type":"multipart/form-data",
-      }
-    }).then(res =>{
-      setLoadingPage(false);
-      message.success("Import Success");
-      getTable()
-    }).catch(error =>{
-      setLoadingPage(false);
-      message.error("Import Error");
-    })
+    const postUpload = await axios
+      .post(uploadPath, data, {
+        headers: {
+          'Comtent-Type': 'multipart/form-data',
+        },
+      })
+      .then((res) => {
+        setLoadingPage(false);
+        message.success('Import Success');
+        getTable();
+      })
+      .catch((error) => {
+        setLoadingPage(false);
+        message.error('Import Error');
+      });
   }
-  
- 
+  //Drop down Template
+  const fetchData = () => {
+        axios
+          .get('http://localhost:3000/api/template/gettemplate')
+          .then((response) => {
+            const { data } = response;
+            if(response.status === 200){
+                //check the api call is success by stats code 200,201 ...etc
+                setDataTemplate(data)
+            }else{
+                //error handle section 
+            }
+          })
+          .catch((error) => console.log(error));
+      };
+
+    useEffect(()=>{
+        fetchData();
+    },[])
   
   return (
-    <Spin tip="loading..." spinning={loadingPage} >
-    <Row>
-      <Col span="4"> 
-            <h3>Download Template</h3>
-            <Button onClick={DownloadTemp} icon={<FileExcelOutlined />} type="primary" >Download Template</Button>
-        </Col>
-        <Col span="3">
-          <Form name="file-upload-form" onFinish={uploadFile} >
-              <h3>Import File</h3>
-              <Form.Item name="excelfile">
-              <Upload   accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" maxCount={1}>
-                <Button icon={<UploadOutlined />}>Upload</Button> 
-              </Upload >
-              </Form.Item>
-              <Button  type="primary" icon={<ArrowRightOutlined />} htmlType="submit">Submit</Button>
+    <Spin tip="loading..." spinning={loadingPage}>
+      <Row>
+        <Col span={5}>
+          <Form name="file-upload-form" onFinish={uploadFile}>
+            <h3>Import File</h3>
+            <Form.Item name="excelfile">
+              <Upload
+                accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+                maxCount={1}
+              >
+                <Button icon={<UploadOutlined />} style={{ width: 230, textAlign: 'center' }}>
+                  Upload
+                </Button>
+              </Upload>
+            </Form.Item>
+            <Button
+              type="primary"
+              icon={<ArrowRightOutlined />}
+              htmlType="submit"
+              disabled={disbledButton}
+              style={{ width: 230 }}
+            >
+              Submit
+            </Button>
           </Form>
         </Col>
-    </Row>
-    <br/>
-    <Row>
-      <Col span={24}>
-        <Table rowKey="log_number" dataSource={resData} columns={columns} />
-      </Col>
-      
-    </Row>
-    
+        <Col span={5}>
+          <h3>Select Template</h3>
+          <Select
+            defaultValue="Template"
+            style={{ width: 230, textAlign: 'center' }}
+            onChange={handleChange}
+          >
+            {datatemplate.map(item => (
+              <Option  key={item.template}>{item.template}</Option>
+                 ))} 
+          </Select>
+        </Col>
+        <Col span={5}>
+          <h3>Download Template</h3>
+          <Button onClick={DownloadTemp} icon={<FileExcelOutlined />} type="primary">
+            Download Template
+          </Button>
+        </Col>
+      </Row>
+      <br />
+      <Row>
+        <Col span={24}>
+          <Table rowKey="log_number" dataSource={resData} columns={columns} />
+        </Col>
+      </Row>
     </Spin>
-      
   );
 };

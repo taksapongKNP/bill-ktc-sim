@@ -18,7 +18,6 @@
 </head>
 
 <body >
-    
     <div style="page-break-after:always;margin: 15px 20px 15px 20px;">
         <div class="row">
             <div class="col-12" >
@@ -309,8 +308,7 @@
                 <table>
                     <tr>
                         <td colspan="3"><b>หมายเหตุ :-</b> ยอดตามใบแจ้งหนี้ค่าใช้บริการ
-                            จะถูกหักจากบัญชีเงินฝากเลขที่ <% if (rows.account_number != null) { %><%= rows.account_number.substr(0,7)+"xxxxx" %><% } else{%> - <%}%>  ในวันที่ <%=
-                                    rows.cut_date %><br>โปรดนำเงินเข้าบัญชีก่อนวันตัดชำระค่าบริการ</td>
+                            จะถูกหักจากบัญชีเงินฝากเลขที่ <% if (rows.account_number != "") { %><%= rows.account_number.substr(0,6)+"xxxxx"+rows.account_number.substr(11,12) %><% } else{%> - <%}%>  ในวันที่ <% if (rows.cut_date != "") { %><%= rows.cut_date %><% } else{%> - <%}%> <br>โปรดนำเงินเข้าบัญชีก่อนวันตัดชำระค่าบริการ</td>
                     </tr>
                 </table>
                 
@@ -319,7 +317,7 @@
         
         <div class="row" style="margin-top:1px">
             <div class="col-12" >
-                <img src="http://localhost:3000/templates/images/Picture2.jpg" width="100%" height="55px" \>
+                <img src="http://localhost:3000/templates/images/Picture2.jpg" width="100%" height="50px" \>
             </div>
         </div>
     </div>
@@ -506,6 +504,7 @@
 </script>
 <script type="text/javascript" src="http://localhost:3000/templates/jquery.min.js"></script>
 <script type="text/javascript" src="http://localhost:3000/templates/qrcode.js"></script>
+<script type="text/javascript" src="http://localhost:3000/templates/qrcode.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
 <script type="text/javascript">
     new QRCode( 

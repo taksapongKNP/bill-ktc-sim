@@ -1,12 +1,14 @@
 const { Sequelize } = require("sequelize");
 const { Local,LocalTest, dbDev } = require("../config/index");
 
-console.log(`this host is : ${dbDev.HOST}`)
+console.log(`this host is : ${Local.HOST}`);
 
-const sequelize = new Sequelize(dbDev.DB, dbDev.USER, dbDev.PASSWORD, {
-  host: dbDev.HOST,
-  port: 3306,
-  dialect: dbDev.dialect,
+const sequelize = new Sequelize(Local.DB, Local.USER, Local.PASSWORD, {
+  host: Local.HOST,
+  port: 8888,
+  //8888
+  //3306
+  dialect: Local.dialect,
   define: {
     underscored: true,
     freezeTableName: true, //use singular table name
@@ -49,6 +51,7 @@ db.billingSub = require("./models.billingSub")(sequelize, Sequelize);
 db.invoice = require("./models.invoice")(sequelize, Sequelize);
 db.uploadLog = require("./models.uploadLog")(sequelize, Sequelize);
 db.zipLog = require("./models.zipLog")(sequelize, Sequelize);
+db.template = require("./models.template")(sequelize, Sequelize);
 
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;

@@ -5,6 +5,14 @@ const cors = require("cors");
 const fileUpload = require('express-fileupload');
 const server = express();
 
+server.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-Width, Content-Type, Accept'
+  )
+  next()
+})
 
 server.use(bodyParser.json());
 server.use(morgan("dev"));
@@ -18,6 +26,8 @@ const port = 3000;
 const Excel = require("exceljs");
 const fs = require("fs");
 
+server.use(cors());
+server.options('*', cors());
 server.use("/font", express.static(__dirname +'/templates/fonts/'));
 server.use("/files", express.static(__dirname +'/files'));
 server.use("/download-files", express.static(__dirname +'/download-files'));
@@ -33,6 +43,9 @@ server.use("/api/levels", require("./routes/rounter.levels.js"));
 server.use("/api/teams", require("./routes/rounter.teams.js"));
 server.use("/api/teamsMap", require("./routes/rounter.teamsMap.js"));
 server.use("/api/billing", require("./routes/rounter.billing.js"));
+server.use("/api/template", require("./routes/rounter.template.js"));
+server.use("/", require("./routes/rounter.billing.js"));
+
 
 server.get("/api/download/excel/:id", (req, res) => {
   const id = req.params.id;

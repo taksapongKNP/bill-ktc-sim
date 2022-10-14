@@ -1,16 +1,38 @@
-import { Table,Form, Row,Col, Upload, message,Button ,Space ,Spin,Modal} from 'antd';
-import React, { useState, useEffect, useRef } from 'react';
-import {getUploadLog ,deleteDataFormLog ,sendSmsFormLog} from '@/services/backend/api';
+import { Table, Form, Row, Col, Upload, message, Button, Spin, Select } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { getUploadLog, deleteDataFormLog, sendSmsFormLog } from '@/services/backend/api';
 
-import {UploadOutlined ,ArrowRightOutlined,FileExcelOutlined } from '@ant-design/icons';
+import { UploadOutlined, ArrowRightOutlined, FileExcelOutlined } from '@ant-design/icons';
 import axios from 'axios';
+import * as XLSX from "xlsx";
 export const StatementManage: React.FC<any> = () => {
-  
-    
   const [loadingPage, setLoadingPage] = useState(false);
-  const uploadPath = "http://localhost:3000/api/billing/statement/readExcelFile";
+  // const uploadPath = 'http://13.213.88.165:3000/api/billing/statement/readExcelFile';
+  const uploadPath = 'http://localhost:3000/api/billing/statement/readExcelFile';
+  const uploadPathType = '/statement/exportStatementToPatch';
   const [resData, setResData] = useState([]);
+  const [template, setTemplate] = useState('');
+  const [disbledButton, setDisbledButton] = useState(true);
+  const [datatemplate,setDataTemplate] = useState<any[]>([]); 
+  const { Option } = Select;
+  const [sheetData, setSheetData] = useState<any []>([]);
 
+//  useEffect(() => {
+//       setSheetData(getData());
+//   }, []); 
+
+  // const handleOnExport = () => {
+  //   console.log(sheetData);
+  // }
+  const handleChange = async (value: string) => {
+    console.log(`${value}`);
+    setTemplate(value);
+     if (value) {
+      setDisbledButton(false);
+    } else {
+      setDisbledButton(true);
+    }
+  };
 
   const columns = [
     // {
@@ -36,110 +58,142 @@ export const StatementManage: React.FC<any> = () => {
     {
       title: 'การส่ง SMS',
       dataIndex: 'sms_status',
-      key: 'sms_status'
+      key: 'sms_status',
     },
     {
-        title: 'Action',
-        dataIndex: 'log_number',
-        key: 'log_number',
-        render: (text: string, key: any[]) => (checkDelete(key)),
-      },
+      title: 'Action',
+      dataIndex: 'log_number',
+      key: 'log_number',
+      render: (text: string, key: any[]) => checkDelete(key),
+    },
   ];
 
-  const checkDelete = (key: any)=>{
-    if(key.log_type_id === '1'){
-      return    <>
-                    <Button href="#" key="{key}" type="primary" style={{marginRight : 10}} onClick={() => SendSms(key)} disabled={key.file_created_status}> Send SMS </Button>
-                    <Button href="#" key="{key}" type="primary"  onClick={() => DeleteData(key)} danger> Delete </Button>
-                    
-                </>
-    }else{
-      return ""
-    }
-  }
+  const checkDelete = (key: any) => {
+    if (key.log_type_id === '1') {
+      let statusDisabled = true;
 
-  const SendSms = async ( key: string | any[]) => {
-      // console.log(key)
-      if (key) {
-        let isExecuted = confirm("ยืนยันการส่ง SMS");
-        if(isExecuted === true){
-          var json = {
-            data:key
-          };
-          await sendSmsFormLog(json).then(res =>{
-            message.success("Send SMS Success");
-            getTable()
-          }).catch(error =>{
-            message.error("Send SMS Error");
-          });
-          
+      if (key.file_created_status == 1) {
+        statusDisabled = false;
       }
+      return (
+        <>
+          <Button
+            href="#"
+            key="{key}"
+            type="primary"
+            style={{ marginRight: 10 }}
+            onClick={() => SendSms(key)}
+            disabled={statusDisabled}
+          >
+            {' '}
+            Send SMS{' '}
+          </Button>
+          <Button href="#" key="{key}" type="primary" onClick={() => DeleteData(key)} danger>
+            {' '}
+            Delete{' '}
+          </Button>
+        </>
+      );
+    } else {
+      return '';
     }
   };
 
-  const DeleteData = async ( key: string | any[]) => {
-        // console.log(key)
+  const SendSms = async (key: string | any[]) => {
+   let phoneList: any[] = [] ;
+    if (key) {
+      let isExecuted = confirm('ยืนยันการส่ง SMS');
+      if (isExecuted === true) {
+        var json = {
+          data: key,
+        };
+        await sendSmsFormLog(json)
+          .then((res) => {
+            // console.log(`aaaa1`,res);
+            phoneList = res["phones"];
+            message.success('Send SMS Success');
+            getTable();
+          })
+          .catch((error) => {
+            message.error('Send SMS Error');
+          });
+      }
+    }
+      setLoadingPage(false);
+      const workSheet = XLSX.utils.json_to_sheet(phoneList);
+      const workBook = XLSX.utils.book_new()
+      XLSX.utils.book_append_sheet(workBook, workSheet, "MySheet");
+
+      let buf = XLSX.write(workBook,{bookType:"xlsx",type:"buffer"});
+
+      XLSX.write(workBook,{bookType:"xlsx",type:"binary"});
+
+      XLSX.writeFile(workBook,"SMS_Invoice.xlsx")
+
+  };
+
+  const DeleteData = async (key: string | any[]) => {
+    // console.log(key)
     // const excelId = await getDataexport(dataid);
     if (key) {
       var json = {
-        data:key
+        data: key,
       };
       // const data = JSON.stringify(json);
-     await deleteDataFormLog(json).then(res =>{
-      message.success("Delete Success");
-      getTable()
-    }).catch(error =>{
-      message.error("Delete Error");
-    });
-     
+      await deleteDataFormLog(json)
+        .then((res) => {
+          message.success('Delete Success');
+          getTable();
+        })
+        .catch((error) => {
+          message.error('Delete Error');
+        });
     }
-
   };
-  
-  useEffect( () => {
-    getTable()
+
+  useEffect(() => {
+    getTable();
   }, []);
 
   async function getTable() {
     const dataList = await getUploadLog('1');
-    if(!dataList){
-
-    }else{
+    if (!dataList) {
+    } else {
       (async function fetchdata() {
-        const result = dataList
-        console.log(result)
+        const result = dataList;
+        console.log(result);
         const data = result.map(
-          
           (x: {
-            id:any;
+            id: any;
             upload_date: any;
             file_name: any;
             log_type_id: any;
             log_type_name: any;
             log_number: any;
-            file_type_id:any;
-            file_type_name:any;
+            file_type_id: any;
+            file_type_name: any;
+            template_type:any;
             file_created_status: any;
           }) => {
-            let sms_status = "";
-            if(x.file_created_status == 0 || x.log_type_id == 2){
-              sms_status ="ไม่สามารถส่งได้";
-            }
-            else if(x.file_created_status == 1 ){
-              sms_status ="รอส่ง";
-            }else if(x.file_created_status == 2){
-              sms_status ="ส่งแล้ว";
+            let sms_status = '';
+            if (x.file_created_status == 0 || x.log_type_id == 2) {
+              sms_status = 'ไม่สามารถส่งได้';
+            } else if (x.file_created_status == 1) {
+              sms_status = 'รอส่ง';
+            } else if (x.file_created_status == 2) {
+              sms_status = 'ส่งแล้ว';
             }
             const mapData = {
-              id:x.id,
+              id: x.id,
               upload_date: x.upload_date,
               file_name: x.file_name,
               log_type_name: x.log_type_name,
               log_number: x.log_number,
-              file_type_id:x.file_type_id,
-              log_type_id:x.log_type_id,
+              file_type_id: x.file_type_id,
+              log_type_id: x.log_type_id,
               file_created_status: x.file_created_status,
-              sms_status: sms_status
+              sms_status: sms_status,
+              template_type: x.template_type,
             };
             return mapData;
           },
@@ -149,69 +203,111 @@ export const StatementManage: React.FC<any> = () => {
     }
   }
 
-  const DownloadTemp = () =>{
+  const DownloadTemp = () => {
+    // window.open(`http://13.213.88.165:3000/download-files/template_statement.xlsx`);
     window.open(`http://localhost:3000/download-files/template_statement.xlsx`);
-  }
-  const uploadFile = (values :any) =>{
+  };
+  const uploadFile = async (values: any) => {
+    var json = {
+      template,
+    };
+    const dataType = JSON.stringify(json);
+    // console.log(uploadPathType);
     console.log('file values');
     console.log(values);
     const data = new FormData();
-    data.append("excelfile",values.excelfile.file.originFileObj,values.excelfile.file.originFileObj.name);
-    console.log(values.excelfile.file.originFileObj.name);
-    // for (let file of values.excelfile.file.originFileObject) {
-    //   data.append('photo[]', file);
-    // }
+    data.append('excelfile',values.excelfile.file.originFileObj,values.excelfile.file.originFileObj.name,);
+    data.append('typeFile', template);
     setLoadingPage(true);
-    axios.post(uploadPath,data,{
-      headers: {
-        "Comtent-Type":"multipart/form-data",
-      }
-    }).then(res =>{
-      setLoadingPage(false);
-      message.success("Import Success");
-    }).catch(error =>{
-      setLoadingPage(false);
-      message.error("Import Error");
-    })
-  }
-  
-  
-  
+    const postUpload = await axios
+      .post(uploadPath, data, {
+        headers: {
+          'Comtent-Type': 'multipart/form-data',
+        },
+      })
+      .then((res) => {
+        setLoadingPage(false);
+        message.success('Import Success');
+      })
+      .catch((error) => {
+        setLoadingPage(false);
+        message.error('Import Error');
+      });
+  };
+  //Drop down Template
+  const fetchData = () => {
+        axios
+          .get('http://localhost:3000/api/template/gettemplate')
+          .then((response) => {
+            const { data } = response;
+            if(response.status === 200){
+                //check the api call is success by stats code 200,201 ...etc
+                setDataTemplate(data)
+            }else{
+                //error handle section 
+            }
+          })
+          .catch((error) => console.log(error));
+      };
+
+    useEffect(()=>{
+        fetchData();
+    },[])
+
   return (
-    <Spin tip="loading..." spinning={loadingPage} >
-    <Row>
-      <Space>
-        <Form name="file-upload-form" onFinish={uploadFile} >
-        <Form.Item>
+    <Spin tip="loading..." spinning={loadingPage}>
+      <Row>
+        <Col span={5}>
+          <Form name="file-upload-form" onFinish={uploadFile}>
+            <h3>Import File</h3>
+            <Form.Item name="excelfile">
+              <Upload
+                accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+                maxCount={1}
+              >
+                <Button icon={<UploadOutlined />} style={{ width: 230, textAlign: 'center' }}>
+                  Upload
+                </Button>
+              </Upload>
+            </Form.Item>
+            <Form.Item>
+              <Button
+                type="primary"
+                icon={<ArrowRightOutlined />}
+                htmlType="submit"
+                style={{ width: 230 }}
+                disabled={disbledButton}
+              >
+                Submit
+              </Button>
+            </Form.Item>
+          </Form>
+        </Col>
+        <Col span={5}>
+          <h3>Select Template</h3>
+          <Select
+            defaultValue="Template"
+            style={{ width: 230, textAlign: 'center' }}
+            onChange={handleChange}
+          >
+            {datatemplate.map(item => (
+              <Option  key={item.template}>{item.template}</Option>
+                 ))} 
+          </Select>
+        </Col>
+        <Col span={8}>
+          <h3>Download Template</h3>
+          <Button onClick={DownloadTemp} icon={<FileExcelOutlined />} type="primary">
             Download Template
-          </Form.Item>
-          <Form.Item>
-          <Button onClick={DownloadTemp} icon={<FileExcelOutlined />} type="primary" >Download Template</Button>
-          </Form.Item>
-          <Form.Item>
-            Import File
-          </Form.Item>
-          <Form.Item name="excelfile">
-            <Upload  accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" maxCount={1}>
-              <Button icon={<UploadOutlined />}>Upload</Button> 
-            </Upload >
-          </Form.Item>
-          <Form.Item>
-            <Button type="primary" icon={<ArrowRightOutlined />} htmlType="submit">Submit</Button>
-          </Form.Item>
-        </Form>
-        
-      </Space>
-    </Row>
-    <br/>
-    <Row>
-      <Col span={24}>
+          </Button>
+        </Col>
+      </Row>
+      <br />
+      <Row>
+        <Col span={24}>
           <Table rowKey="log_number" dataSource={resData} columns={columns} />
-      </Col>
-      
-    </Row>
-   
+        </Col>
+      </Row>
     </Spin>
-      
   );
 };

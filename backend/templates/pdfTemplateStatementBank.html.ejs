@@ -264,7 +264,7 @@
                             </tr>
                             <tr>
                                 <td colspan="3"><b>หมายเหตุ :-</b> ยอดตามใบแจ้งหนี้ค่าใช้บริการ
-                                    จะถูกหักจากบัญชีเงินฝากเลขที่ <% if (rows.account_number != null) { %><%= rows.account_number.substr(0,6)+"xxxxx"+rows.account_number.substr(11,12) %><% } else{%> - <%}%>  ในวันที่ <%=
+                                    จะถูกหักจากบัญชีเงินฝากเลขที่ <% if (rows.account_number != null) { %><%= rows.account_number.substr(0,8)+"xxx-x"%><% } else{%> - <%}%>  ในวันที่ <%=
                                             rows.cut_date %><br>โปรดนำเงินเข้าบัญชีก่อนวันตัดชำระค่าบริการ</td>
                             </tr>
                         </tbody>

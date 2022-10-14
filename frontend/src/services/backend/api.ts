@@ -132,7 +132,12 @@ export async function downloadPdfBilling(data: any) {
 }
 
 export async function getdataBillingByDate (data: any){
+  console.log("----------------------+", data);
+  console.log(`${urlBackend}/api/billing/statement/findByDate/${data}`);
+  console.log("----------------------");
+  
   const token = localStorage.getItem('token');
+
   return request<any>(`${urlBackend}/api/billing/statement/findByDate/${data}`, {
     method: 'POST',
     headers:{
@@ -167,7 +172,12 @@ export async function exportZipByDate (data: any){
 //Invoice
 
 export async function getdataInvoiceByDate (data: any){
+  console.log("----------------------+", data);
+  console.log(`${urlBackend}/api/billing/invoice/findByDate/${data}`);
+  console.log("----------------------");
+
   const token = localStorage.getItem('token');
+  
   return request<any>(`${urlBackend}/api/billing/invoice/findByDate/${data}`, {
     method: 'POST',
     headers:{
@@ -241,4 +251,19 @@ export async function sendSmsFormLog(data:any) {
     ...(data || {}),
     
   });
+}
+
+//get data template
+export async function getTemplate (){
+  console.log("----------------------+"+"Hello");
+  console.log(`${urlBackend}/api/template/gettemplate`);
+  console.log("----------------------");
+
+  const token = localStorage.getItem('token');
+  return request<any>(`${urlBackend}/api/template/gettemplate`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
 }

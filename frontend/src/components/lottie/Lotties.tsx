@@ -8,6 +8,8 @@ export const Lotties: React.FC<any> = () => {
       style={{
         justifyContent: 'center',
         alignItems: 'center',
+        display: "flex",
+        marginTop: "100px"
       }}
     >
       <Lottie config={{ animationData: animationData }} height={'500px'} width={'500px'}></Lottie>

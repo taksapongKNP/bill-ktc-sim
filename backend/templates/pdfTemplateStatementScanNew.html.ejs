@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <!-- CSS only -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" >
+        <!-- <link  href="https://cdn.jsdelivr.net/npm/chart.js@3.3.2/dist/chart.min.js"  rel='stylesheet' > -->
+        <!-- <link rel="stylesheet" media="screen" href="https://fontlibrary.org//face/thsarabun-new" type="text/css"/> -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
+    <style>
+        *{
+            font-family: 'Sarabun', sans-serif;
+        }
+    </style>
+</head>
+
+<body >
+    <div style="page-break-after:always;margin: 15px 20px 15px 20px;">
+        <div class="row">
+            <div class="col-12" >
+                <img src="http://localhost:3000/templates/images/Picture1.jpg" width="100%" height="60px" \>
+            </div>
+        </div>
+        <br \>
+        <div class="row">
+            <div class="col-12" >
+
+                <div class="text-center" style="font-size:12px;font-weight:bold;">ใบแจ้งค่าใช้บริการ (STATEMENT)</div>
+                
+                    <table style="font-size:7px;width:100%;">
+
+                        <tr>
+                            <td width="50%">ชื่อลูกค้า <%= rows.cust_name %>
+                            </td>
+                            <td width="15%">&nbsp;</td>
+                            <td width="20%">รหัสลูกค้า (Account No.)</td>
+                            <td width="15%">
+                                <%= rows.account_no %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="50%">ที่อยู่ <%= rows.cust_add %>
+                            </td>
+                            <td width="15%">&nbsp;</td>
+                            <td width="20%">เลขที่ (Invoice No)</td>
+                            <td width="15%">
+                                <%= rows.invoice_no %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="50%">เลขประจำตัวผู้เสียภาษี <%= rows.tax_id %>
+                            </td>
+                            <td width="15%">&nbsp;</td>
+                            <td width="20%">วันที่ (Issue Date)</td>
+                            <td width="15%">
+                                <%= rows.issue_date %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td width="50%">
+                                <%= rows.cust_mobile %>
+                            </td>
+                            <td colspan="3" width="50%">สรุปรายการค่าใช้บริการ (Bill Cycle) &nbsp;&nbsp;&nbsp;<%=
+                                    rows.bill_cycle_start %> - <%= rows.bill_cycle_end %>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <table class="table table-bordered border-dark" style="font-size:7px;">
+                        <thead>
+                            <tr>
+                                <th class="text-center">ค่าบริการค้างชำระ<br>(Outstanding Balance)</th>
+                                <th class="text-center">ค่าบริการที่ชำระแล้ว<br>(Paid amount)</th>
+                                <th class="text-center">ค่าใช้บริการรอบปัจจุบัน<br>(Current charge)</th>
+                                <th class="text-center">ยอดรวมที่ต้องชำระทั้งสิ้น<br>(Total Outstanding balance)</th>
+                                <th class="text-center">วันครบกำหนดชำระ<br>(Current Due date)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="text-center">
+                                    <% if (rows.out_bal != null) { %>
+                                    <%= Number(rows.out_bal).toFixed(2) %>
+                                    <% }else { %>
+                                        0.00
+                                    <%} %>
+
+                                </td>
+                                <td class="text-center">
+                                    <% if (rows.paid_amount != null) { %>
+                                    <%= Number(rows.paid_amount).toFixed(2) %>
+                                    <% }else { %>
+                                        0.00
+                                    <%} %>
+                                </td>
+                                <td class="text-center">
+                                    <% if (rows.current_charge != null) { %>
+                                    <%= Number(rows.current_charge).toFixed(2) %>
+                                    <% }else { %>
+                                        0.00
+                                    <%} %>
+                                </td>
+                                <td class="text-center">
+                                    <% if (rows.total_out_bal != null) { %>
+                                    <%= Number(rows.total_out_bal).toFixed(2) %>
+                                    <% }else { %>
+                                        0.00
+                                    <%} %>
+
+                                </td>
+                                <td class="text-center">
+                                    <%=rows.current_due_date %>
+                                   
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <% var sumAmt =0; %>
+                    <table class="" style="font-size:7px;width:100%;">
+                        <thead>
+                            <tr>
+                                <th colspan="2" style="border : 1px solid #000 !important;" width="80%"
+                                    class="text-center">รวมค่าบริการรอบปัจจุบัน<br>(Summary of Current Charges)</th>
+                                <th colspan="2" style="border : 1px solid #000 !important;" width="20%"
+                                    class="text-center">จำนวนเงิน<br>(Amount)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="height:100px;" valign="top">
+                                <td colspan="2" style="border : 1px solid #000 !important;" align="left" valign="top">
+                                    <% if (rows.current_charge != 0) { %>
+                                        &nbsp;&nbsp;&nbsp;ค่าบริการรายเดือน รอบ <%=rows.bill_cycle_start %> - <%=rows.bill_cycle_end %>
+                                        <br />
+                                        
+                                    <% } %>
+                                    
+                                </td>
+                                <td colspan="2" style="border : 1px solid #000 !important;text-align : right;">
+                                    <% if (rows.current_charge != 0) { %>
+                                        <!-- <% sumAmt =sumAmt+ Number(rows.current_charge); %> -->
+                                        <%=rows.monthly_charge %>&nbsp;&nbsp;&nbsp;
+                                        <br />
+                                    <% } %>
+                                   
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="50%">Promotion : ค่าบริการ SIM 250 บาท/เลขหมาย/เดือน</td>
+                                <td width="20%">จำนวนเงิน</td>
+                                <td style="border : 1px solid #000 !important;text-align : right;">
+                                    <%=rows.monthly_charge  %>&nbsp;&nbsp;&nbsp;
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="50%">-เน็ตไม่อั้นไม่ลดสปีด 4Mbps </td>
+                                <td width="20%">ภาษีมูลค่าเพิ่ม 7 %</td>
+                                <td style="border : 1px solid #000 !important;text-align : right;">
+                                    <%=rows.tax_charge %>&nbsp;&nbsp;&nbsp;
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="50%">-โทรในเครือข่าย dtac ฟรี /โทรนอกเครือข่ายทุกเครือข่ายฟรี 15 นาที</td>
+                                <td width="20%">รวมค่าใช้บริการการรอบปัจจุบัน</td>
+                                <td style="border : 1px solid #000 !important;text-align : right;" >
+                                    <%=rows.total_charge %>&nbsp;&nbsp;&nbsp;
+                                </td>
+                            </tr>
+                            <!-- <tr>
+                                <td colspan="3">-ฟรี SMS 50 ข้อความ</td>
+                            </tr>
+                            <tr>
+                                <td colspan="3">ค่าบริการส่วนเกิน</td>
+                            </tr>
+                            <tr>
+                                <td colspan="3">- SMS ข้อความละ 2 บาท</td>
+                            </tr>
+                            <tr>
+                                <td colspan="3">- MSS ข้อความละ 6 บาท</td>
+                            </tr>
+                            <tr>
+                                <td colspan="3">- VDO Call นาทีละ 1.50 บาท</td>
+                            </tr> -->
+                            
+                        </tbody>
+                    </table><br>
+
+            </div>
+
+        </div>
+        <div style="font-size:7px;" >
+            <!-- <div class="row" >
+                <b>หมายเหตุ :</b> ไม่รวมการโทรระหว่างประเทศ, บริการโรมมิ่ง, บริการเสียง,บริการหมายเลขพิเศษ และบริการส่งเสริมการขายอื่นๆ
+                ที่นอกเหนือจากสิทธิพิเศษที่กล่าวข้างต้นรวมถึงค่าธรรมเนียมอื่นๆ เช่น
+                ค่าธรรมเนียมการเ้ปลี่ยนแพ็กเกจ ค่าบริการดาวน์โหลด ค่าบริการดาวน์โหลดของผู้บริการ
+                เป็นต้น
+                <br/><br/>
+            </div> -->
+            <div class="row">
+                
+                <table height="60px" width="100%" >
+                    <tr>
+                        <td  style = "border : 1px solid #000 !important;" width="75%">
+                            <br>
+                            <b>เลขประจำตัวผู้เสียภาษี : </b><%= rows.tax_id %><br><br>
+                            <b>บริษัท OSD จำกัด<br><br>
+                            <br>
+                        </td>
+                        <td  style = "border : 1px solid #000 !important;" width=25%">
+                            <b>ชื่อลูกค้า : </b><%= rows.cust_name %><br><br>
+                            <b>เลขที่อ้างอิง 1 (Ref. 1) : </b><%= rows.ref1 %><br><br>
+                            <b>เลขที่อ้างอิง 2 (Ref. 2) : </b><%= rows.ref2 %><br><br>
+                        </td>
+                    </tr>
+                    <tr class="text-left" style="border : 1px solid #000 !important;background: #ddd;">
+                        <td colspan="2">
+                            จำนวนเงิน
+                            <% if (rows.total_out_bal != null) { %>
+                                <%= Number(rows.total_out_bal).toFixed(2) %>
+                                <% }else { %>
+                                    0.00
+                            <%} %> 
+                            บาท   (<%= totalOutBalTxt%>)
+                        </td>
+                    </tr>
+                    <tr>
+                        <!-- <td style = "border : 1px solid #000 !important;" width="100%" class="text-center"> -->
+                            <table width="100%">
+                                <tr style = "border : 1px solid #000 !important;" width="100%" class="text-center">
+                                    <td width="75%">
+                                        <img style = "width:250px" id="barcodeShow<%=chkNum%>"></img>
+                                    </td>
+                                    <td width="25%">
+                                       
+                                        <div  style = "display: inline-block;margin-top:5px" id="qrcode<%=chkNum%>" ></div>
+                                       
+                                    </td>
+                                </tr>
+                            </table>
+                        <!-- </td> -->
+                    </tr>
+                    
+                </table>
+            </div>
+            <div class="row text-center" style="margin-top:5px"> 
+                <img src="http://localhost:3000/templates/images/bankCrop.jpg" width="100%" \>
+            </div>
+            <div class="row" >
+                <table>
+                    <tr>
+                        <td colspan="3"><b>หมายเหตุ :-</b> ยอดตามใบแจ้งหนี้ค่าใช้บริการ
+                            จะถูกหักจากบัญชีเงินฝากเลขที่ <% if (rows.account_number != "0") { %><%= rows.account_number.substr(0,6)+"xxxxx"+rows.account_number.substr(11,12) %><% } else{%> - <%}%>  ในวันที่ <% if (rows.cut_date != "") { %><%= rows.cut_date %><% } else{%> - <%}%><br>โปรดนำเงินเข้าบัญชีก่อนวันตัดชำระค่าบริการ</td>
+                    </tr>
+                </table>
+                
+            </div>
+        </div>
+        <div class="row" style="margin-top:1px">
+            <div class="col-12" >
+                <img src="http://localhost:3000/templates/images/Picture2.jpg" width="100%" height="55px" \>
+            </div>
+        </div>
+    </div>
+
+<% if(detail.length > 0 ){ %>
+    <div style="page-break-after:always;margin:20px;font-size:7px;">
+        <% var lastPage =Math.ceil((detail.length+(group.length*2))/60)+1; %>
+        <table width="100%" >
+            <tr>
+                <td style="width: 50%;">รายละเอียดการใช้บริการ <%= rows.cust_name %></td>
+                <td style="width: 40%;">รายละเอียดการใช้บริการ <%= rows.cust_name %></td>
+                <td style="width: 10%;text-align: right;">2/<%= lastPage %></td>
+            </tr>
+        </table>
+        
+        <div class="row">
+            <div class="col-12">
+                
+                <table class="table table-bordered border-dark" style="font-size:7px;" width="100%" >
+                    <thead>
+                        <tr>
+                            <td class="text-center" style="width: 25%;">หมายเลข</td>
+                            <td class="text-center" style="width: 22%;">เวลา</td>
+                            <td class="text-center" style="width: 20%;">วัน เดือน ปี</td>
+                            <td class="text-center" style="width: 13%;">หน่วย</td>
+                            <td class="text-center" style="width: 20%;">จำนวนเงิน</td> 
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>  
+        <div class="row">
+            
+            <% var chkrows =0; %>
+            <% var chkpage =2; %>
+            <% if(group != null ){ %>
+                
+            <% if(detail != null ){ %>
+            <div class="col-12">
+                เลขหมาย <%= rows.cust_mobile %><br>
+                <% for (var i=0; i <group.length; i++) { %>
+                <%= group[i].gname %> 
+                <% chkrows = chkrows+1; %>
+                <% if(chkrows%60 == 0){ %>
+                <% chkpage =chkpage+1; %>
+            </div>
+        </div> 
+    </div> 
+    <div style="page-break-after:always;margin:20px;font-size:7px;">
+        <table width="100%" > 
+            <tr>
+                <td style="width: 50%;">รายละเอียดการใช้บริการ <%= rows.cust_name %></td>
+                <td style="width: 40%;">รายละเอียดการใช้บริการ <%= rows.cust_name %></td>
+                <td style="width: 10%;text-align: right;"><%= chkpage %>/<%= lastPage %></td>
+            </tr>
+        </table>
+        <div class="row">
+            <div class="col-12">
+                
+                <table class="table table-bordered border-dark" style="font-size:7px;" width="100%" >
+                    <thead>
+                        <tr>
+                            <td class="text-center" style="width: 25%;">หมายเลข</td>
+                            <td class="text-center" style="width: 22%;">เวลา</td>
+                            <td class="text-center" style="width: 20%;">วัน เดือน ปี</td>
+                            <td class="text-center" style="width: 13%;">หน่วย</td>
+                            <td class="text-center" style="width: 20%;">จำนวนเงิน</td> 
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>  
+        <div class="row">
+            <div class="col-12">   
+                <% } %>
+                <!-- <% sumUnit =0; %> -->
+                <% sumDetail =0; %>
+                <table style="font-size:7px;" width="100%" >
+                    <% for (var x=0; x <detail.length; x++) { %>
+                    <% if(group[i].gid == detail[x].service_charge_id ){ %>
+                    <tr>
+                        <td class="text-left" style="width: 25%;"><%= detail[x].destination_number.trim() %></td>
+                        <td class="text-center" style="width: 22%;"><%= detail[x].call_time.trim() %></td>
+                        <td class="text-center" style="width: 20%;"><%= detail[x].call_date.trim() %></td>
+                        <td style="width: 13%;text-align: right;"><%= (Math.round(detail[x].unit * 100) / 100).toFixed(2)  %></td>
+                        <td style="width: 20%;text-align: right;"><%= (Math.round(detail[x].service_charge_amt * 100) / 100).toFixed(2) %></td>
+                    </tr>
+                    <!-- <% sumUnit = sumUnit+Number(detail[x].unit); %> -->
+                    <% sumDetail = sumDetail+Number(detail[x].service_charge_amt); %>
+                    <% chkrows = chkrows+1; %>
+                    <% if(chkrows%60 == 0){ %>
+                    <% chkpage =chkpage+1; %>
+                </table>
+            </div>
+        </div> 
+    </div> 
+    <div style="page-break-after:always;margin:20px;font-size:7px;">
+    <table width="100%" >
+        <tr>
+            <td style="width: 50%;">รายละเอียดการใช้บริการ <%= rows.cust_name %></td>
+            <td style="width: 40%;">รายละเอียดการใช้บริการ <%= rows.cust_name %></td>
+            <td style="width: 10%;text-align: right;"><%= chkpage %>/<%= lastPage %></td>
+        </tr>
+    </table>   
+    <div class="row">
+        <div class="col-12">
+            
+            <table class="table table-bordered border-dark" style="font-size:7px;" width="100%" >
+                <thead>
+                    <tr>
+                        <td class="text-center" style="width: 25%;">หมายเลข</td>
+                        <td class="text-center" style="width: 22%;">เวลา</td>
+                        <td class="text-center" style="width: 20%;">วัน เดือน ปี</td>
+                        <td class="text-center" style="width: 13%;">หน่วย</td>
+                        <td class="text-center" style="width: 20%;">จำนวนเงิน</td> 
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>  
+    <div class="row">
+        <div class="col-12">  
+            <table style="font-size:7px;" width="100%" >
+                    <% } %>
+                    
+                    <% } %>
+                    <% } %>
+                    <tr>
+                        <th colspan="4" style="text-align:right;">รวม</th>
+                        <!-- <th style="text-align:right"> &nbsp;&nbsp;&nbsp;<%= (Math.round(sumUnit * 100) / 100 ).toFixed(2) %></th> -->
+                        <th style="text-align:right"> &nbsp;&nbsp;&nbsp;<%= (Math.round(sumDetail * 100) / 100).toFixed(2)  %></th>
+                    </tr>
+                    <% chkrows = chkrows+1; %>
+                    <% if(chkrows%60 == 0){ %>
+                    <% chkpage =chkpage+1; %>
+                </table>
+            </div>
+        </div> 
+    </div> 
+    <div style="page-break-after:always;margin:20px;font-size:7px;">
+    <table width="100%" >
+        <tr>
+            <td style="width: 50%;">รายละเอียดการใช้บริการ <%= rows.cust_name %></td>
+            <td style="width: 40%;">รายละเอียดการใช้บริการ <%= rows.cust_name %></td>
+            <td style="width: 10%;text-align: right;"><%= chkpage %>/<%= lastPage %></td>
+        </tr>
+    </table>
+    <div class="row">
+        <div class="col-12">
+            
+            <table class="table table-bordered border-dark" style="font-size:7px;" width="100%" >
+                <thead>
+                    <tr>
+                        <td class="text-center" style="width: 25%;">หมายเลข</td>
+                        <td class="text-center" style="width: 22%;">เวลา</td>
+                        <td class="text-center" style="width: 20%;">วัน เดือน ปี</td>
+                        <td class="text-center" style="width: 13%;">หน่วย</td>
+                        <td class="text-center" style="width: 20%;">จำนวนเงิน</td> 
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>  
+    <div class="row">
+        <div class="col-12">  
+            <table style="font-size:7px;" width="100%" >
+                    <% } %>
+            </table>
+                <% } %>
+            </div>  
+            <% } %>
+            <% } %>
+        </div>
+        
+    </div>
+<% } %>
+
+
+</body>
+
+<!-- JavaScript Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+    crossorigin="anonymous">
+</script>
+<script type="text/javascript" src="http://localhost:3000/templates/jquery.min.js"></script>
+<script type="text/javascript" src="http://localhost:3000/templates/qrcode.js"></script>
+<script type="text/javascript" src="http://localhost:3000/templates/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+<script type="text/javascript">
+    new QRCode( 
+        document.getElementById("qrcode<%=chkNum%>"), 
+        "<%=scanTxtCode%>");
+    JsBarcode("#barcodeShow<%=chkNum%>", "<%=scanTxtCode%>"
+    ,{
+        format:'CODE128',
+        text:'<%=scanTxtCodeShow%>',
+    }
+    );
+    </script>
+</html>

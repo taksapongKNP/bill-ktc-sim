@@ -133,10 +133,10 @@ module.exports = {
       resolve(dataList);
     });
   },
-  findInvoiceByIssueDate: (startDate,endDate) => {
+  findInvoiceByIssueDate: (startDate,endDate, template) => {
     console.log(startDate+" - "+endDate)
     return new Promise((resolve, reject) => {
-      const dataList =  db.sequelize.query(`SELECT * FROM db_invoice  WHERE STR_TO_DATE(issue_date,'%d/%m/%Y')  BETWEEN STR_TO_DATE('${startDate}','%d/%m/%Y') AND STR_TO_DATE('${endDate}','%d/%m/%Y')  `, { type: QueryTypes.SELECT });
+      const dataList =  db.sequelize.query(`SELECT * FROM db_invoice  WHERE STR_TO_DATE(issue_date,'%d/%m/%Y')  BETWEEN STR_TO_DATE('${startDate}','%d/%m/%Y') AND STR_TO_DATE('${endDate}','%d/%m/%Y') and  template = '${template}'  `, { type: QueryTypes.SELECT });
       resolve(dataList);
     });
   },

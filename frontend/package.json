@@ -81,6 +81,7 @@
     "umi": "^v3.4.0",
     "umi-plugin-dynamic-antd-theme": "^3.1.0",
     "utf8": "^3.0.0",
+    "xlsx": "^0.18.5",
     "yarn": "^1.22.17"
   },
   "devDependencies": {

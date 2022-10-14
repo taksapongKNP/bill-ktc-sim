@@ -31,13 +31,13 @@
   //   component: './Servey',
   // },
   {
-    name: 'Statement',
+    name: 'Invoice',
     icon: 'fileText',
     path: '/billing/statement',
     component: './Statement',
   },
   {
-    name: 'Invoice',
+    name: 'Statement',
     icon: 'fileText',
     path: '/billing/invoice',
     component: './Invoice',
