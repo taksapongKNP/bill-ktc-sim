@@ -149,13 +149,18 @@ export async function getdataBillingByDate (data: any){
   })
 }
 
-// export async function exportPdfByDate (data: any){
-//   return request<any>(`${urlBackend}/api/billing/statement/pdfByDate/${data}`, {
-//     method: 'GET',
-//     data: data,
-//     ...(data || {}),
-//   })
-// }
+export async function exportPdfByDate (data: any){
+  const token = localStorage.getItem('token');
+  return request<any>(`${urlBackend}/api/billing/statement/pdfByDate/${data}`, {
+    method: 'GET',
+    headers :{
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    data: data,
+    ...(data || {}),
+  })
+}
 
 export async function exportZipByDate (data: any){
   const token = localStorage.getItem('token');

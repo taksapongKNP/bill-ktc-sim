@@ -1,6 +1,6 @@
 import { Table, Row, Col, DatePicker, Button, Space, Spin, Select, Form } from 'antd';
 import React, { useState, useEffect } from 'react';
-import { getdataBillingByDate, exportZipByDate, getTemplate } from '@/services/backend/api';
+import { getdataBillingByDate, exportZipByDate, getTemplate, exportPdfByDate } from '@/services/backend/api';
 import axios from 'axios';
 
 
@@ -182,6 +182,8 @@ export const StatementTable: React.FC<any> = () => {
   };
   
   async function exportPdfList() {
+    console.log("--------------Strat--------------");
+    
     var json = {
       startDate: startDate.replaceAll('/', '|'),
       endDate: endDate.replaceAll('/', '|'),
@@ -201,6 +203,28 @@ export const StatementTable: React.FC<any> = () => {
     // window.open(`http://13.213.88.165:3000/api/billing/statement/pdfByDate/${data}`);
     window.open(`http://localhost:3000/api/billing/statement/pdfByDate/${data}`);
   }
+
+  // async function exportPdfList() {
+  //   var w = window;
+  //    setLoadingPage(true);
+  //   var json = {
+  //     startDate: startDate.replaceAll('/', '|'),
+  //     endDate: endDate.replaceAll('/', '|'),
+  //     template,
+  //   };
+
+  //   // console.log(dataPDF);
+  //   var data = JSON.stringify(json);
+  //   await exportPdfByDate(data).then(function (value) {
+  //     var pathJson = {
+  //       path: value,
+  //     };
+  //     var pathdata = JSON.stringify(pathJson);
+  //     setLoadingPage(false);
+  //     // w.location.href = `http://13.213.88.165:3000/api/billing/statement/downloadFileByPath/${pathdata}`;
+  //     w.location.href = `http://localhost:3000/api/billing/statement/downloadFileByPath/${pathdata}`;
+  //   });
+  // }
 
   async function exportZipList() {
     var w = window;

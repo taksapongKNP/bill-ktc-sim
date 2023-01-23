@@ -153,6 +153,8 @@ export const InvoiceManage: React.FC<any> = () => {
 
   async function getTable() {
     const dataList = await getUploadLog('2');
+    console.log(dataList);
+    
     if(!dataList){
 
     }else{
@@ -195,8 +197,10 @@ export const InvoiceManage: React.FC<any> = () => {
               sms_status:sms_status
             };
             return mapData;
+            
           },
         );
+       
         setResData(data);
       })();
     }

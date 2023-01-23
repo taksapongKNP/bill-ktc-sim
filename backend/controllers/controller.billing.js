@@ -136,7 +136,7 @@ exports.exportStatement = async (req, res) => {
     res.set({
       "Content-Type": "application/pdf; charset=utf-8;",
       "Content-Disposition":
-        "attachment;filename=Statement" + invoice + ".pdf",
+        "attachment;filename=Invoice" + invoice + ".pdf",
     });
     stream.pipe(res);
   });
@@ -156,6 +156,16 @@ exports.pdfStatementByDate = async (req, res) => {
   const endDate =  json.endDate.toString().split("|").join("/"); 
   const template =  json.template.toString().split("|").join("/"); 
   console.log("export to PDF form : " + startDate + " " + endDate);
+  var templates = "";
+    if (json.template === "KTC") {
+      // if (accountNumber != "") {
+      //   templates = "./templates/pdfTemplateStatementBank.html.ejs";
+      // } else {
+        templates = "./templates/pdfTemplateStatementScan.html.ejs";
+      // }
+    } else if (json.template === "KONDEE") {
+        templates = "./templates/pdfTemplateStatementScanNew.html.ejs";
+    }
 
   const dataList = await billingService.findStatementByIssueDate(startDate, endDate, template)
   .then((data) => {
@@ -166,37 +176,31 @@ exports.pdfStatementByDate = async (req, res) => {
       res.status(500).send(err);
     });
   console.log(dataList.length);
+  var invoiceNo = [];
+  // var totalProcess = 0;
+  // var lenProcess = dataList.length;
   var html = "";
   for (var i = 0; i < dataList.length; i++) {
-    var phone = dataList[i].cust_mobile.toString().trim();
-    var invoice = dataList[i].invoice_no.toString().trim();
+    // var phone = dataList[i].cust_mobile.toString().trim();
+    var invoiceno = dataList[i].invoice_no.toString().trim();
     var accountNo = dataList[i].account_no.toString().trim().replace(/[^0-9]/g, "");
     var totalOutBalStr = Number(dataList[i].total_out_bal.toString().trim()).toFixed(2).replace(/[^0-9]/g, "");
-    var scanTxtCode ="|010554612702201\\n" +accountNo +"\\n" +invoice.replace(/[^0-9]/g, "") +"\\n" +totalOutBalStr;
-    var scanTxtCodeShow ="|010554612702201 " +accountNo +" " +invoice.replace(/[^0-9]/g, "") +" " +totalOutBalStr;
+    var scanTxtCode ="|010554612702201\\n" +accountNo +"\\n" +invoiceno.replace(/[^0-9]/g, "") +"\\n" +totalOutBalStr;
+    var scanTxtCodeShow ="|010554612702201 " +accountNo +" " +invoiceno.replace(/[^0-9]/g, "") +" " +totalOutBalStr;
     var totalOutBalTxt = bahttext.bahttext(Number(dataList[i].total_out_bal.toString().trim()));
-    var accountNumber = dataList[i].account_number.toString();
-    var templates = "";
-    if (json.template === "KTC") {
-      // if (accountNumber != "") {
-      //   templates = "./templates/pdfTemplateStatementBank.html.ejs";
-      // } else {
-        templates = "./templates/pdfTemplateStatementScan.html.ejs";
-      // }
-    } else if (json.template === "KONDEE") {
-        templates = "./templates/pdfTemplateStatementScanNew.html.ejs";
-    }
-    var detailList = await billingSubService.fileByDateAndPhone(invoice)
+    // var accountNumber = dataList[i].account_number.toString();
+    
+    var detailList = await billingSubService.fileByDateAndPhone(invoiceno)
     .then((data) => {
       return data;
     });
 
-    var groupList = await billingSubService.fileGroupByDateAndPhone(invoice)
+    var groupList = await billingSubService.fileGroupByDateAndPhone(invoiceno)
     .then((data) => {
       return data;
     });
 
-    // console.log(phone);
+    // console.log(detailList);
     // console.log(groupList);
     html += await ejs.renderFile(
      templates,
@@ -209,31 +213,44 @@ exports.pdfStatementByDate = async (req, res) => {
         scanTxtCodeShow: scanTxtCodeShow,
         chkNum: i,
       },
-      { async: true },"utf8"
+      { async: true },
     );
   }
-
-  var options = {childProcessOptions: { env: { OPENSSL_CONF: "/dev/null" } },format: "A4",timeout: "540000"};
-  var file = { content: html };
-  pdf.create(html, options).toStream(
-    (err, stream) => {
-      // if (err) {
-      //   console.log(err);
-      // }else{
-        res.set({
-          "Content-Type": "application/pdf; charset=utf-8;",
-          "Content-Disposition": "attachment;filename=Statement_" + uid + ".pdf",
-        });
+  var options = {childProcessOptions: { env: { OPENSSL_CONF: "/dev/null" } },format: "A4", timeout:"300000"};
+  // var options = {orientation: 'landscape',type: 'pdf', timeout:"1800000"};
+    var file = { content: html };
+      pdf.create(html,options).toStream((err, stream) => {
+        res.setHeader('Content-type', 'application/pdf');
+        res.setHeader('Content-disposition', "attachment;filename=Invoice_" + uid + ".pdf");
+        // if (err) {
+        //   console.log(
+        //     "🚀 ~ file: controller.billing.js ~ line 164 ~ exports.pdfStatementByDate= ~ err",
+        //     err
+        //   );
+        // }else{
+        // res.set({
+        //   "Content-Type": "application/pdf; charset=utf-8;",
+        //   "Content-Disposition": "attachment;filename=Invoice_" + uid + ".pdf",
+        // });
         stream.pipe(res);
-      }
-  // }
-  )
-  console.log("------------------End----------------");
+        
+        // stream.pipe(fs.createWriteStream('output.pdf'));
+        // console.log('pdf generated');
+        // res.send("report will be mailed");
+        // totalProcess++;
+        // }
+        
+      })
+    //   while (totalProcess < lenProcess) {
+    //   await sleep(1000);
+    //   console.log(totalProcess);
+    // }
+    console.log("------------------End----------------"); 
 };
 
 exports.zipStatementByDate = async (req, res) => {  
   const uid = uuidv4();
-  const filepath = "./files/zipStatement_" + uid + ".zip";
+  const filepath = "./files/zipInvoice_" + uid + ".zip";
   const json = JSON.parse(req.params.data);
   console.log("-------------------------");
   console.log(json.template);
@@ -305,7 +322,7 @@ exports.zipStatementByDate = async (req, res) => {
 
     var options = {childProcessOptions: { env: { OPENSSL_CONF: '/dev/null' } }, format: "A4", };
     var file = { content: html };
-    filename = "./files/zipStatement_"+uid+"/"+issue_date+"/"+"Statement" + invoiceNo[i] +".pdf";
+    filename = "./files/zipInvoice_"+uid+"/"+issue_date+"/"+"Invoice" + invoiceNo[i] +".pdf";
   
     // await genPDF(html, options,filename) ;
     pdf.create(html, options).toFile(filename,(err, res)=>{
@@ -319,13 +336,13 @@ exports.zipStatementByDate = async (req, res) => {
     console.log(totalProcess);
   }
     
-    zipFolder('./files/zipStatement_'+uid, filepath, function(err) {
+    zipFolder('./files/zipInvoice_'+uid, filepath, function(err) {
         console.log("--------------------- zip file statement ---------------------");
         if(err) {
             console.log('err : ', err);
         } else {
             console.log('Zip Statement Done');
-            rimraf("./files/zipStatement_"+uid, function () { console.log("Deleted Folder : zipStatement_"+uid); });
+            rimraf("./files/zipInvoice_"+uid, function () { console.log("Deleted Folder : zipInvoice_"+uid); });
             res.send(filepath.split("/").join("|"));  
         }
     });
@@ -372,8 +389,8 @@ exports.readStatementExcelFile = async (req, res) => {
   const dd = String(today.getDate()).padStart(2, "0");
   const mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
   const yyyy = today.getFullYear();
-  today = mm + "/" + dd + "/" + yyyy + " " + today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-
+  today = mm + "/" + dd + "/" + yyyy + " " + (today.getHours()) + ":" + today.getMinutes() + ":" + today.getSeconds();
+  console.log(today);
   var file = req.files.excelfile;
   const fileName = utf8.decode(file.name.toString());
 
@@ -861,8 +878,6 @@ exports.exportInvoice = async (req, res) => {
     // } else {
     //   templates = "./templates/pdfTemplateInvoicenew.html.ejs";
     // }
-    
-
     var html = await ejs.renderFile(
       templates,
       {
@@ -892,7 +907,7 @@ exports.exportInvoice = async (req, res) => {
     // res.setHeader('Content-Type', 'application/pdf')
     res.set({
       "Content-Type": "application/pdf; charset=utf-8;",
-      "Content-Disposition": "attachment;filename=Invoice_" + id + ".pdf",
+      "Content-Disposition": "attachment;filename=Receipt_" + id + ".pdf",
     });
     stream.pipe(res);
   });
@@ -932,7 +947,7 @@ exports.pdfInvoiceByDate = async (req, res) => {
       console.log(err);
       res.status(500).send(err);
     });
-  console.log(dataList);
+  console.log(dataList.length);
   var html = "";
   for (var i = 0; i < dataList.length; i++) {
     feeAmt = Math.round(dataList[i].vat * 100) / 100;
@@ -973,7 +988,7 @@ exports.pdfInvoiceByDate = async (req, res) => {
     }else{
     res.set({
       "Content-Type": "application/pdf; charset=utf-8;",
-      "Content-Disposition": "attachment;filename=Invoice_" + startDate + "-" + endDate + ".pdf"
+      "Content-Disposition": "attachment;filename=Receipt_" + startDate + "-" + endDate + ".pdf"
     })
     stream.pipe(res)
     }
@@ -982,7 +997,7 @@ exports.pdfInvoiceByDate = async (req, res) => {
 
 exports.zipInvoiceByDate = async (req, res) => {
   const uid = uuidv4();
-  const filepath = "./files/zipInvoice_" + uid + ".zip";
+  const filepath = "./files/zipReciept_" + uid + ".zip";
   // const nowDate = Date.now();
   var date_ob = new Date();
   var date = ("0" + date_ob.getDate()).slice(-2);
@@ -1057,7 +1072,7 @@ exports.zipInvoiceByDate = async (req, res) => {
         format: "A4",
         timeout: "540000"
       };
-      filename = "./files/zipInvoice_" + uid + "/" +"Invoice" + taxInvoiceNo[i] + ".pdf";
+      filename = "./files/zipReciept_" + uid + "/" +"Reciept" + taxInvoiceNo[i] + ".pdf";
       // console.log(i);
 
       // await genPDF(html, options,filename) ;
@@ -1073,7 +1088,7 @@ exports.zipInvoiceByDate = async (req, res) => {
       console.log(totalProcess);
     }
 
-    zipFolder("./files/zipInvoice_" + uid, filepath, function (err) {
+    zipFolder("./files/zipReciept_" + uid, filepath, function (err) {
       console.log(
         "--------------------- zip file invoice ---------------------"
       );
@@ -1081,8 +1096,8 @@ exports.zipInvoiceByDate = async (req, res) => {
         console.log("oh no!", err);
       } else {
         console.log("Zip Invoice Done");
-        rimraf("./files/zipInvoice_" + uid, function () {
-          console.log("Deleted Folder : zipInvoice_" + uid);
+        rimraf("./files/zipReciept_" + uid, function () {
+          console.log("Deleted Folder : zipReciept_" + uid);
         });
         res.send(filepath.split("/").join("|"));
       }
@@ -1131,7 +1146,7 @@ exports.readInvoiceExcelFile = async (req, res) => {
   const mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
   const yyyy = today.getFullYear();
   today =mm +"/" +dd +"/" + yyyy +" " +today.getHours() + ":" +today.getMinutes() + ":" +today.getSeconds();
-  console.log(today);
+  console.log(today+"---------------------Dateeeeeeee");
   var file = req.files.excelfile;
   const fileName = utf8.decode(file.name.toString());
   var wb = xlsx.read(file.data, { type: "buffer" });
@@ -1402,7 +1417,7 @@ const exportStatementToPatch = async (typeFrom) => {
   if (dataList.length > 0) {
     console.log("------------------ Start Export Statement ------------------");
     const uid = uuidv4();
-    const filepath = "./files/zipStatement_" + uid + ".zip";
+    const filepath = "./files/zipReciept_" + uid + ".zip";
 
     var invoiceNo = [];
     var totalProcess = 0;
@@ -1455,7 +1470,8 @@ const exportStatementToPatch = async (typeFrom) => {
           scanTxtCodeShow: scanTxtCodeShow,
           chkNum: i,
         },
-        { async: true }
+        { async: true },
+        "utf8"
       );
 
       var options = {
@@ -1463,7 +1479,7 @@ const exportStatementToPatch = async (typeFrom) => {
         format: "A4",
         timeout: "640000",
       };
-      var file = { content: html };
+      // var file = { content: html };
       // filename = `${homePage}/statement/` + logNumber + `/` + accountNo + `/` + `Statement` + invoiceNo[i] + `.pdf`;
       filename = "../../../files/statement/" +logNumber + "/" + accountNo + "/" +"Statement" +invoiceNo[i] + ".pdf";
       // await genPDF(html, options,filename) ;
